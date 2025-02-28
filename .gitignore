@@ -15,6 +15,16 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
+### Maven ###
+target/
+
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
