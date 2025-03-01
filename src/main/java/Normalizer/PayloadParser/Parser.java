@@ -1,12 +1,9 @@
 package Normalizer.PayloadParser;
 
 import MarketDataType.MarketDataQueryType;
+import MarketDataType.Quote;
 import MarketDataType.Trade;
 import com.fasterxml.jackson.databind.JsonNode;
-
-import MarketDataType.Quote;
-
-import java.io.Serializable;
 
 public interface Parser {
     Quote parseTicker(JsonNode root);

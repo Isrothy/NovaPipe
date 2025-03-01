@@ -2,18 +2,15 @@ package Normalizer;
 
 import DataChannel.ChannelException;
 import DataChannel.DataChannel;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import java.io.BufferedWriter;
-
 import MarketDataType.MarketDataQueryType;
 import Normalizer.PayloadParser.BinanceUsPayloadParser;
 import Normalizer.PayloadParser.CoinbasePayloadParser;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;

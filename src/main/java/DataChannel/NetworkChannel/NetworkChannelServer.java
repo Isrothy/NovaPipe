@@ -1,12 +1,11 @@
 package DataChannel.NetworkChannel;
 
-import DataChannel.DataChannel;
 import DataChannel.ChannelException;
+import DataChannel.DataChannel;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 

@@ -5,8 +5,8 @@ import MarketDataType.Trade;
 import Utils.JsonUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import java.time.Instant;
 import java.math.BigDecimal;
+import java.time.Instant;
 
 public class BinanceUsPayloadParser implements Parser {
     private final String platform = "binance.us";

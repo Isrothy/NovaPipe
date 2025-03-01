@@ -1,5 +1,5 @@
-import DataChannel.DataChannel;
 import DataChannel.ChronicleQueueChannel;
+import DataChannel.DataChannel;
 import MarketDataType.MarketDataQueryType;
 import Normalizer.Normalizer;
 import Producer.Producer;
@@ -10,7 +10,7 @@ import java.nio.file.Path;
 
 public class ChronicleQueueChannelDemo {
 
-    public static void chronicleQueueChannelDemo()  throws Exception  {
+    public static void chronicleQueueChannelDemo() throws Exception {
         // Use a directory for Chronicle Queue storage.
         Path queueDir = Path.of("queue-data");
         if (!Files.exists(queueDir)) {

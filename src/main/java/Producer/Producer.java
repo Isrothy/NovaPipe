@@ -1,9 +1,9 @@
 package Producer;
 
+import DataChannel.ChannelException;
+import DataChannel.DataChannel;
 import MarketDataType.MarketDataQueryType;
 import Producer.QueryGenerator.QueryGenerator;
-import DataChannel.DataChannel;
-import DataChannel.ChannelException;
 
 import java.net.URI;
 import java.net.http.HttpClient;

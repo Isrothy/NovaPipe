@@ -1,5 +1,5 @@
-import DataChannel.DataChannel;
 import DataChannel.BlockingQueueChannel;
+import DataChannel.DataChannel;
 import MarketDataType.MarketDataQueryType;
 import Normalizer.Normalizer;
 import Producer.Producer;

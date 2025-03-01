@@ -1,9 +1,11 @@
 package DataChannel.NetworkChannel;
 
-import DataChannel.DataChannel;
 import DataChannel.ChannelException;
+import DataChannel.DataChannel;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.concurrent.TimeUnit;
 

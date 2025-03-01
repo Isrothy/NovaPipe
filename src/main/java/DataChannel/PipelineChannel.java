@@ -13,6 +13,7 @@ public class PipelineChannel implements DataChannel {
     private final DataChannel inputChannel;
     private final DataChannel outputChannel;
     private final List<Thread> forwarderThreads = new ArrayList<>();
+    private final List<DataChannel> channels = new ArrayList<>();
     private volatile boolean closed = false;
 
     /**
@@ -28,6 +29,7 @@ public class PipelineChannel implements DataChannel {
         }
         this.inputChannel = channels[0];
         this.outputChannel = channels[channels.length - 1];
+        this.channels.addAll(List.of(channels));
 
         // For each adjacent pair of channels, start a forwarding thread.
         for (int i = 0; i < channels.length - 1; i++) {
@@ -72,8 +74,9 @@ public class PipelineChannel implements DataChannel {
     @Override
     public void close() throws ChannelException {
         closed = true;
-        inputChannel.close();
-        outputChannel.close();
+        for (DataChannel channel : channels) {
+            channel.close();
+        }
         for (Thread t : forwarderThreads) {
             t.interrupt();
         }

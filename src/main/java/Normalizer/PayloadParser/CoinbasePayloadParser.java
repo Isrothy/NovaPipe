@@ -5,8 +5,8 @@ import MarketDataType.Trade;
 import Utils.JsonUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import java.time.ZonedDateTime;
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 
 public class CoinbasePayloadParser implements Parser {
 
