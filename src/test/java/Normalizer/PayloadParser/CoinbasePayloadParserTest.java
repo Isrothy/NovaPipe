@@ -12,6 +12,7 @@ import MarketDataType.Trade;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+
 class CoinbasePayloadParserTest {
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -20,26 +21,26 @@ class CoinbasePayloadParserTest {
     @Test
     public void testParseTicker() throws Exception {
         String json = """
-        {
-          "type": "quote",
-          "sequence": 37475248783,
-          "product_id": "ETH-USD",
-          "price": "1285.22",
-          "open_24h": "1310.79",
-          "volume_24h": "245532.79269678",
-          "low_24h": "1280.52",
-          "high_24h": "1313.8",
-          "volume_30d": "9788783.60117027",
-          "best_bid": "1285.04",
-          "best_bid_size": "0.46688654",
-          "best_ask": "1285.27",
-          "best_ask_size": "1.56637040",
-          "side": "buy",
-          "time": "2022-10-19T23:28:22.061769Z",
-          "trade_id": 370843401,
-          "last_size": "11.4396987"
-        }
-        """;
+                {
+                  "type": "quote",
+                  "sequence": 37475248783,
+                  "product_id": "ETH-USD",
+                  "price": "1285.22",
+                  "open_24h": "1310.79",
+                  "volume_24h": "245532.79269678",
+                  "low_24h": "1280.52",
+                  "high_24h": "1313.8",
+                  "volume_30d": "9788783.60117027",
+                  "best_bid": "1285.04",
+                  "best_bid_size": "0.46688654",
+                  "best_ask": "1285.27",
+                  "best_ask_size": "1.56637040",
+                  "side": "buy",
+                  "time": "2022-10-19T23:28:22.061769Z",
+                  "trade_id": 370843401,
+                  "last_size": "11.4396987"
+                }
+                """;
 
         JsonNode root = mapper.readTree(json);
         Quote quote = parser.parseTicker(root);
@@ -63,19 +64,19 @@ class CoinbasePayloadParserTest {
     @Test
     public void testParseTrade() throws Exception {
         String json = """
-        {
-          "type": "match",
-          "trade_id": 10,
-          "sequence": 50,
-          "maker_order_id": "ac928c66-ca53-498f-9c13-a110027a60e8",
-          "taker_order_id": "132fb6ae-456b-4654-b4e0-d681ac05cea1",
-          "time": "2014-11-07T08:19:27.028459Z",
-          "product_id": "BTC-USD",
-          "size": "5.23512",
-          "price": "400.23",
-          "side": "sell"
-        }
-        """;
+                {
+                  "type": "match",
+                  "trade_id": 10,
+                  "sequence": 50,
+                  "maker_order_id": "ac928c66-ca53-498f-9c13-a110027a60e8",
+                  "taker_order_id": "132fb6ae-456b-4654-b4e0-d681ac05cea1",
+                  "time": "2014-11-07T08:19:27.028459Z",
+                  "product_id": "BTC-USD",
+                  "size": "5.23512",
+                  "price": "400.23",
+                  "side": "sell"
+                }
+                """;
 
         JsonNode root = mapper.readTree(json);
         Trade trade = parser.parseTrade(root);
