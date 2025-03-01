@@ -1,6 +1,6 @@
 package DataChannel;
 
-public interface DataChannel {
+public interface DataChannel extends AutoCloseable {
 
     void send(String message) throws ChannelException;
 
