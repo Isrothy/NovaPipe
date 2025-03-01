@@ -19,7 +19,7 @@ class CoinbasePayloadParserTest {
     private final CoinbasePayloadParser parser = new CoinbasePayloadParser();
 
     @Test
-    public void testParseTicker() throws Exception {
+    public void testParseQuote() throws Exception {
         String json = """
                 {
                   "type": "quote",
@@ -43,7 +43,7 @@ class CoinbasePayloadParserTest {
                 """;
 
         JsonNode root = mapper.readTree(json);
-        Quote quote = parser.parseTicker(root);
+        Quote quote = parser.parseQuote(root);
 
         assertEquals("coinbase", quote.platform());
         assertEquals(37475248783L, quote.sequence());

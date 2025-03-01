@@ -8,12 +8,32 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
+/**
+ * The {@code CoinbasePayloadParser} class is responsible for parsing JSON market data messages
+ * from Coinbase's WebSocket API into structured {@link Quote} and {@link Trade} objects.
+ * <p>
+ * This parser handles two types of messages:
+ * <ul>
+ *     <li>**Ticker (Quote)**: Provides real-time best bid, best ask, price, and volume data.</li>
+ *     <li>**Match (Trade)**: Represents a trade execution with details like price, size, and order IDs.</li>
+ * </ul>
+ */
 public class CoinbasePayloadParser implements Parser {
 
     private final String platform = "coinbase";
 
+    /**
+     * Parses a ticker (quote) message from the Coinbase WebSocket feed.
+     * <p>
+     * The input JSON is expected to contain fields like {@code best_bid}, {@code best_ask}, {@code price},
+     * {@code volume_24h}, and other relevant market data. If any field is missing or null, it will be ignored.
+     * </p>
+     *
+     * @param root the root JSON node containing the ticker data.
+     * @return a {@link Quote} object representing the parsed ticker data, or {@code null} if parsing fails.
+     */
     @Override
-    public Quote parseTicker(JsonNode root) {
+    public Quote parseQuote(JsonNode root) {
         //// Ticker messsage
         //{
         //  "type": "ticker",
@@ -97,6 +117,16 @@ public class CoinbasePayloadParser implements Parser {
         }
     }
 
+    /**
+     * Parses a trade (match) message from the Coinbase WebSocket feed.
+     * <p>
+     * The input JSON is expected to contain fields like {@code trade_id}, {@code price}, {@code size},
+     * {@code maker_order_id}, {@code taker_order_id}, and {@code time}. If any field is missing or null, it will be ignored.
+     * </p>
+     *
+     * @param root the root JSON node containing the trade data.
+     * @return a {@link Trade} object representing the parsed trade data, or {@code null} if parsing fails.
+     */
     @Override
     public Trade parseTrade(JsonNode root) {
         //{

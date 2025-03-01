@@ -8,11 +8,36 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.math.BigDecimal;
 import java.time.Instant;
 
+/**
+ * The {@code BinanceUsPayloadParser} class is responsible for parsing JSON market data messages
+ * from Binance.US's WebSocket API into structured {@link Quote} and {@link Trade} objects.
+ * <p>
+ * This parser handles two types of messages:
+ * <ul>
+ *     <li>**Order Book Update (Quote)**: Provides best bid and ask prices with their respective sizes.</li>
+ *     <li>**Trade Event (Trade)**: Represents an executed trade with price, size, buyer/seller details.</li>
+ * </ul>
+ */
 public class BinanceUsPayloadParser implements Parser {
     private final String platform = "binance.us";
 
+    /**
+     * Parses an order book update message from Binance.US WebSocket feed into a {@link Quote} object.
+     * <p>
+     * The input JSON is expected to contain fields such as:
+     * <ul>
+     *     <li>{@code u} - Order book update ID</li>
+     *     <li>{@code s} - Symbol (e.g., "BNBUSDT")</li>
+     *     <li>{@code b}, {@code B} - Best bid price and size</li>
+     *     <li>{@code a}, {@code A} - Best ask price and size</li>
+     * </ul>
+     * If any field is missing or invalid, the method will return {@code null}.
+     *
+     * @param root the root JSON node containing the order book update data.
+     * @return a {@link Quote} object representing the parsed order book update, or {@code null} if parsing fails.
+     */
     @Override
-    public Quote parseTicker(JsonNode root) {
+    public Quote parseQuote(JsonNode root) {
         //{
         //  "u":400900217,     // order book updateId
         //  "s":"BNBUSDT",     // symbol
@@ -76,6 +101,25 @@ public class BinanceUsPayloadParser implements Parser {
         }
     }
 
+    /**
+     * Parses a trade event message from Binance.US WebSocket feed into a {@link Trade} object.
+     * <p>
+     * The input JSON is expected to contain fields such as:
+     * <ul>
+     *     <li>{@code e} - Event type (expected to be "trade")</li>
+     *     <li>{@code E} - Event timestamp</li>
+     *     <li>{@code s} - Symbol (e.g., "BNBBTC")</li>
+     *     <li>{@code t} - Trade ID</li>
+     *     <li>{@code p}, {@code q} - Price and quantity of trade</li>
+     *     <li>{@code b}, {@code a} - Buyer and seller order IDs</li>
+     *     <li>{@code T} - Trade timestamp</li>
+     *     <li>{@code m} - Whether the buyer is the market maker</li>
+     * </ul>
+     * If any field is missing or invalid, the method will return {@code null}.
+     *
+     * @param root the root JSON node containing the trade event data.
+     * @return a {@link Trade} object representing the parsed trade, or {@code null} if parsing fails.
+     */
     @Override
     public Trade parseTrade(JsonNode root) {
         //{

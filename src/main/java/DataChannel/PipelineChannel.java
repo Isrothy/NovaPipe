@@ -4,10 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * PipelineChannel chains several DataChannel instances together.
- * The first channel receives data via send() and the last channel provides
- * data via receive(). Internally, forwarding threads are started to read from
- * each channel and send to the next.
+ * {@code PipelineChannel} chains multiple {@link DataChannel} instances together.
+ * <p>
+ * The first channel in the pipeline acts as the entry point for messages via {@link #send(String)},
+ * while the last channel serves as the exit point where messages are received via {@link #receive()}.
+ * Internally, background threads continuously forward data from one channel to the next.
+ * </p>
+ *
+ * <h3>Usage Example:</h3>
+ * <pre>{@code
+ * DataChannel networkChannel = new NetworkChannelClient("localhost", 12345);
+ * DataChannel queueChannel = new ChronicleQueueChannel("queue-dir");
+ * DataChannel pipeline = new PipelineChannel(networkChannel, queueChannel);
+ *
+ * pipeline.send("test message");
+ * String received = pipeline.receive();
+ * }</pre>
+ *
  */
 public class PipelineChannel implements DataChannel {
     private final DataChannel inputChannel;
@@ -16,12 +29,19 @@ public class PipelineChannel implements DataChannel {
     private final List<DataChannel> channels = new ArrayList<>();
     private volatile boolean closed = false;
 
+
     /**
-     * Constructs a pipeline from the given channels.
-     * There must be at least two channels: the first is the pipeline input,
-     * and the last is the pipeline output.
+     * Constructs a pipeline from the given {@link DataChannel} instances.
+     * The first channel in the list is treated as the input channel, and the last
+     * channel is treated as the output channel.
+     * <p>
+     * A background forwarding thread is started for each adjacent pair of channels
+     * to relay messages from one to the next.
+     * </p>
      *
-     * @param channels The ordered channels in the pipeline.
+     * @param channels The ordered sequence of {@link DataChannel} instances forming the pipeline.
+     *                 Must contain at least two channels.
+     * @throws IllegalArgumentException if fewer than two channels are provided.
      */
     public PipelineChannel(DataChannel... channels) {
         if (channels == null || channels.length < 2) {
@@ -39,6 +59,14 @@ public class PipelineChannel implements DataChannel {
         }
     }
 
+    /**
+     * Creates a thread that continuously forwards messages from the source channel
+     * to the destination channel until the pipeline is closed.
+     *
+     * @param src  The source {@link DataChannel} to read messages from.
+     * @param dest The destination {@link DataChannel} to forward messages to.
+     * @return A thread that forwards messages between the two channels.
+     */
     private Thread getPipelineThread(DataChannel src, DataChannel dest) {
         return new Thread(() -> {
             try {
@@ -53,6 +81,12 @@ public class PipelineChannel implements DataChannel {
         });
     }
 
+    /**
+     * Sends a message into the pipeline, which is passed to the first channel.
+     *
+     * @param message The message to send.
+     * @throws ChannelException If the pipeline is closed or an error occurs in sending.
+     */
     @Override
     public void send(String message) throws ChannelException {
         // Sending to the pipeline sends the message to the first channel.
@@ -62,6 +96,12 @@ public class PipelineChannel implements DataChannel {
         inputChannel.send(message);
     }
 
+    /**
+     * Receives a message from the pipeline, retrieving it from the last channel.
+     *
+     * @return The received message.
+     * @throws ChannelException If the pipeline is closed or an error occurs in receiving.
+     */
     @Override
     public String receive() throws ChannelException {
         // Receiving from the pipeline gets the message from the last channel.
@@ -71,6 +111,15 @@ public class PipelineChannel implements DataChannel {
         return outputChannel.receive();
     }
 
+    /**
+     * Closes the pipeline, shutting down all internal channels and forwarding threads.
+     * <p>
+     * Each {@link DataChannel} in the pipeline is closed, and all background
+     * forwarding threads are interrupted.
+     * </p>
+     *
+     * @throws ChannelException If an error occurs during closure.
+     */
     @Override
     public void close() throws ChannelException {
         closed = true;

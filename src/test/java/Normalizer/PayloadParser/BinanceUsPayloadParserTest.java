@@ -18,7 +18,7 @@ class BinanceUsPayloadParserTest {
     private final BinanceUsPayloadParser parser = new BinanceUsPayloadParser();
 
     @Test
-    public void testParseTicker() throws Exception {
+    public void testParseQuote() throws Exception {
         String json = """
                 {
                   "u": 400900217,
@@ -31,7 +31,7 @@ class BinanceUsPayloadParserTest {
                 """;
 
         JsonNode root = mapper.readTree(json);
-        Quote quote = parser.parseTicker(root);
+        Quote quote = parser.parseQuote(root);
 
         assertEquals("binance.us", quote.platform());
         assertEquals(400900217L, quote.sequence());

@@ -12,7 +12,15 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-
+/**
+ * The {@code Producer} class is responsible for connecting to a WebSocket-based
+ * market data stream, receiving messages, and forwarding them to a specified
+ * {@link DataChannel}.
+ * <p>
+ * It supports different market data providers by utilizing a {@link QueryGenerator}
+ * that constructs subscription messages for different exchanges.
+ * </p>
+ */
 public class Producer implements Runnable {
     private final QueryGenerator gen;
     private final String product;
@@ -21,6 +29,14 @@ public class Producer implements Runnable {
     private boolean firstMessageReceived = false;
     private volatile boolean running = true;
 
+    /**
+     * Constructs a {@code Producer} instance that subscribes to market data.
+     *
+     * @param gen     the {@link QueryGenerator} responsible for generating subscription messages.
+     * @param product the financial product (e.g., "BTC-USD") to subscribe to.
+     * @param type    the type of market data query (e.g., {@code TRADE}, {@code QUOTE}).
+     * @param channel the {@link DataChannel} to which received data will be forwarded.
+     */
     public Producer(QueryGenerator gen, String product, MarketDataQueryType type, DataChannel channel) {
         this.product = product;
         this.type = type;
@@ -32,6 +48,10 @@ public class Producer implements Runnable {
         running = false;
     }
 
+    /**
+     * Runs the WebSocket connection in a separate thread, subscribing to market data
+     * and handling incoming messages.
+     */
     @Override
     public void run() {
         try {
@@ -58,7 +78,9 @@ public class Producer implements Runnable {
         }
     }
 
-
+    /**
+     * WebSocket listener implementation for handling market data messages.
+     */
     class NovaPipeWebSocket implements WebSocket.Listener {
 
         @Override
@@ -68,6 +90,16 @@ public class Producer implements Runnable {
             WebSocket.Listener.super.onOpen(webSocket);
         }
 
+        /**
+         * Handles incoming text messages from the WebSocket.
+         * Simply wraps the message in a JSON object and forwards it to the data channel.
+         * A tag is added to identify the source of the message.
+         *
+         * @param webSocket the WebSocket instance.
+         * @param data      the received message.
+         * @param last      whether this is the last part of a message.
+         * @return a completed future.
+         */
         @Override
         public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
             System.out.println("Received message: " + data);
@@ -82,7 +114,7 @@ public class Producer implements Runnable {
                                 "payload": %s
                             }
                             """, type.toString(), gen.getTag(), data.toString());
-                    msg = msg.replaceAll("[\\r\\n]+", "");// Remove newlines
+                    msg = msg.replaceAll("[\\r\\n]+", "");// Remove newlines. Very important!
                     channel.send(msg);
                 } catch (ChannelException e) {
                     throw new RuntimeException(e);
@@ -92,6 +124,13 @@ public class Producer implements Runnable {
             return CompletableFuture.completedFuture(null);
         }
 
+        /**
+         * Handles incoming ping messages. Keep connection alive
+         *
+         * @param webSocket the WebSocket instance.
+         * @param message   the ping message content.
+         * @return a completed future.
+         */
         @Override
         public CompletionStage<?> onPing(WebSocket webSocket, ByteBuffer message) {
             System.out.println("Received ping: " + new String(message.array()));
@@ -100,6 +139,13 @@ public class Producer implements Runnable {
             return CompletableFuture.completedFuture(null);
         }
 
+        /**
+         * Handles incoming ping messages. Keep connection alive
+         *
+         * @param webSocket the WebSocket instance.
+         * @param message   the ping message content.
+         * @return a completed future.
+         */
         @Override
         public CompletionStage<?> onPong(WebSocket webSocket, ByteBuffer message) {
             System.out.println("Received pong: " + new String(message.array()));
@@ -107,12 +153,26 @@ public class Producer implements Runnable {
             return CompletableFuture.completedFuture(null);
         }
 
+        /**
+         * Handles the closure of the WebSocket.
+         *
+         * @param webSocket   the WebSocket on which the message has been received
+         * @param statusCode  the status code
+         * @param reason      the reason
+         *
+         * @return
+         */
         @Override
         public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
             System.out.println("WebSocket closed: " + statusCode + " " + reason);
             return CompletableFuture.completedFuture(null);
         }
 
+        /**
+         * Handles errors that occur during WebSocket communication.
+         * @param webSocket the WebSocket on which the error has occurred
+         * @param error     the error
+         */
         @Override
         public void onError(WebSocket webSocket, Throwable error) {
             System.out.println("WebSocket error: " + error.getMessage());
