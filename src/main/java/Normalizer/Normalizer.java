@@ -8,6 +8,9 @@ import java.io.BufferedWriter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -59,5 +62,19 @@ public class Normalizer implements Runnable {
         writer.write(data);
         writer.newLine();
         writer.flush();
+    }
+
+    private Object parse(JsonNode root) {
+        String tag = root.get("tag").asText();
+        JsonNode payloadNode = root.get("payload");
+        Pattern pattern = Pattern.compile("([^@]+)@([^@]+)");
+        Matcher matcher = pattern.matcher(tag);
+        if (!matcher.matches()) {
+            System.err.printf("Invalid tag format: %s", tag);
+            return null;
+        }
+        String symbol = matcher.group(1);
+        String exchange = matcher.group(2);
+
     }
 }

@@ -1,6 +1,6 @@
 package Producer.QueryGenerator;
 
-import MarketDataQueryType.MarketDataQueryType;
+import MarketDataType.MarketDataQueryType;
 
 public class CoinbaseGenerator implements QueryGenerator {
 
@@ -11,12 +11,12 @@ public class CoinbaseGenerator implements QueryGenerator {
             case QUOTE -> "ticker";
         };
         return String.format("""
-            { 
-                "type": "subscribe",
-                "product_ids": ["%s"],
-                "channels": ["%s"]
-            }
-            """, productType, channel);
+                {
+                    "type": "subscribe",
+                    "product_ids": ["%s"],
+                    "channels": ["%s"]
+                }
+                """, productType, channel);
     }
 
     @Override
@@ -26,7 +26,7 @@ public class CoinbaseGenerator implements QueryGenerator {
 
     @Override
     public String getTag() {
-        return"coinbase";
+        return "coinbase";
     }
 
 }

@@ -1,6 +1,6 @@
 package Producer;
 
-import MarketDataQueryType.MarketDataQueryType;
+import MarketDataType.MarketDataQueryType;
 import Producer.QueryGenerator.QueryGenerator;
 import DataChannel.DataChannel;
 import DataChannel.ChannelException;

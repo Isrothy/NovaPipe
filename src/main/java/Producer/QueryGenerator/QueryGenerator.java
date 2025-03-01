@@ -1,6 +1,6 @@
 package Producer.QueryGenerator;
 
-import MarketDataQueryType.MarketDataQueryType;
+import MarketDataType.MarketDataQueryType;
 
 public interface QueryGenerator {
     String generateQueryMessage(String productType, MarketDataQueryType queryType);
