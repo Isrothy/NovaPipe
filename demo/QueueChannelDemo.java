@@ -31,7 +31,7 @@ public class QueueChannelDemo {
         Producer producer = new Producer(new CoinbaseGenerator(), "BTC-USD", MarketDataQueryType.QUOTE, channel);
         Thread producerThread = new Thread(() -> {
             try {
-                producer.produceRawExchangeData();
+                producer.run();
             } catch (Exception e) {
                 e.printStackTrace();
             }
