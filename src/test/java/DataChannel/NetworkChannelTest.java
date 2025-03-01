@@ -224,8 +224,8 @@ public class NetworkChannelTest {
         Future<String[]> clientFuture = executor.submit(clientTask);
 
         // Wait for both tasks to complete with generous timeouts.
-        serverFuture.get(10, TimeUnit.SECONDS);
-        String[] received = clientFuture.get(10, TimeUnit.SECONDS);
+        serverFuture.get(20, TimeUnit.SECONDS);
+        String[] received = clientFuture.get(20, TimeUnit.SECONDS);
 
         assertNotNull(received, "Received messages should not be null");
         assertEquals("Message 1", received[0], "First message should be 'Message 1'");

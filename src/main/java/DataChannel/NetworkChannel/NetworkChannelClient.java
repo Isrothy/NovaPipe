@@ -12,7 +12,6 @@ public class NetworkChannelClient implements DataChannel {
     private final int port;
     private Socket socket;
     private BufferedReader reader;
-    private BufferedWriter writer;
     private volatile boolean closed;
 
     private static final int MAX_RETRIES = 5;
@@ -34,7 +33,6 @@ public class NetworkChannelClient implements DataChannel {
             try {
                 socket = new Socket(host, port);
                 reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 System.out.println("Connected to server " + host + ":" + port);
                 return;
             } catch (IOException e) {
@@ -69,7 +67,6 @@ public class NetworkChannelClient implements DataChannel {
         } catch (IOException ignored) { }
         socket = null;
         reader = null;
-        writer = null;
     }
 
     @Override

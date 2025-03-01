@@ -11,6 +11,10 @@ import java.nio.file.Path;
 
 public class NetworkChannelDemo {
 
+    public static void main(String[] args) throws Exception {
+        serverCrashDemo();
+    }
+
     //Demo for NetworkChannel
     public static void usageDemo() throws Exception {
         int port = 12345;  // Choose an available port
@@ -62,8 +66,8 @@ public class NetworkChannelDemo {
 
         // --- Producer Side (Server) ---
         Thread producerThread = new Thread(() -> {
-            try (DataChannel clientChannel = new NetworkChannelServer(port)) {
-                Producer producer = new Producer(new CoinbaseGenerator(), "BTC-USD", MarketDataQueryType.TRADE, clientChannel);
+            try (DataChannel serverChannel = new NetworkChannelServer(port)) {
+                Producer producer = new Producer(new CoinbaseGenerator(), "BTC-USD", MarketDataQueryType.TRADE, serverChannel);
                 producer.run();
             } catch (Exception e) {
                 System.err.println("Producer error: " + e.getMessage());
@@ -121,7 +125,63 @@ public class NetworkChannelDemo {
         System.out.println("Demo complete. Check output file at: " + outputFile.toAbsolutePath());
     }
 
-    public static void main(String[] args) throws Exception {
-        clientCrashDemo();
+    public static void serverCrashDemo() throws Exception {
+        int port = 12345;  // Choose an available port
+
+        // Use a fixed output file to store normalized JSON messages.
+        Path outputFile = Path.of("normalized_output_server_crash.json");
+        if (!Files.exists(outputFile)) {
+            Files.createFile(outputFile);
+        }
+        System.out.println("Output file: " + outputFile.toAbsolutePath());
+
+        // --- Consumer Side (Client) Phase 1 ---
+        // Start a consumer thread that connects to the server and receives messages.
+        Thread consumer = new Thread(() -> {
+            try (DataChannel clientChannel = new NetworkChannelClient("localhost", port)) {
+                Normalizer normalizer = new Normalizer(clientChannel, outputFile.toString());
+                normalizer.run();
+            } catch (Exception e) {
+                System.err.println("Consumer error: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+        consumer.start();
+
+        // --- Producer Side (Server) Phase 1 ---
+        Thread producerPhase1 = new Thread(() -> {
+            try (DataChannel serverChannel = new NetworkChannelServer(port)) {
+                Producer producer = new Producer(new CoinbaseGenerator(), "BTC-USD", MarketDataQueryType.TRADE, serverChannel);
+                producer.run();
+            } catch (Exception e) {
+                System.err.println("Producer Phase 1 error: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+        producerPhase1.start();
+
+        Thread.sleep(10000);
+        producerPhase1.interrupt();
+        producerPhase1.join();
+        System.out.println("Phase 1 complete. (Server crashed)");
+
+        // --- Producer Side (Server) Phase 1 ---
+        Thread producerPhase2 = new Thread(() -> {
+            try (DataChannel serverChannel = new NetworkChannelServer(port)) {
+                Producer producer = new Producer(new CoinbaseGenerator(), "BTC-USD", MarketDataQueryType.TRADE, serverChannel);
+                producer.run();
+            } catch (Exception e) {
+                System.err.println("Producer Phase 2 error: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+
+        Thread.sleep(10000);
+        System.out.println("Simulating phrase 2...");
+        producerPhase2.start();
+
+
+        System.out.println("Demo complete. Check output file at: " + outputFile.toAbsolutePath());
     }
+
 }
