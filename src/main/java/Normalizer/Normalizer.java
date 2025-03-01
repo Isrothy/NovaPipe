@@ -64,7 +64,6 @@ public class Normalizer implements Runnable {
     private void process(String rawData) throws IOException {
         JsonNode jsonNode = objectMapper.readTree(rawData);
         var obj = parse(jsonNode);
-//        System.out.println(obj);
         if (obj != null) {
             String output = objectMapper.writeValueAsString(obj);
             writer.write(output);
@@ -75,7 +74,7 @@ public class Normalizer implements Runnable {
         }
     }
 
-    private Serializable parse(JsonNode root) {
+    private Object parse(JsonNode root) {
         String tag = root.get("tag").asText();
         JsonNode payloadNode = root.get("payload");
         Pattern pattern = Pattern.compile("([^@]+)@([^@]+)");

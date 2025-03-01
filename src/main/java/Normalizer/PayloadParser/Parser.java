@@ -11,7 +11,7 @@ import java.io.Serializable;
 public interface Parser {
     Quote parseTicker(JsonNode root);
     Trade parseTrade(JsonNode root);
-    default Serializable parse(MarketDataQueryType type, JsonNode root) {
+    default Object parse(MarketDataQueryType type, JsonNode root) {
         return switch (type) {
             case TRADE -> parseTrade(root);
             case QUOTE -> parseTicker(root);
