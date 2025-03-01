@@ -1,6 +1,7 @@
-package Producer.BinanceUs;
+package Producer;
 
-import Producer.RawExchangeDataProducer;
+import MarketDataQueryType.MarketDataQueryType;
+import Producer.QueryGenerator.QueryGenerator;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -53,37 +54,27 @@ class NovaPipeWebSocket implements WebSocket.Listener {
     }
 }
 
-public class DataProducer implements RawExchangeDataProducer {
+public class Producer {
+    private final QueryGenerator gen;
+    private final String product;
+    private final MarketDataQueryType type;
 
-    private final String symbol;
-    private final MarketDataStreamType type;
-    private static int id_counter = 1;
 
-    public DataProducer(String symbol, MarketDataStreamType type) {
-        this.symbol = symbol;
+    public Producer(QueryGenerator gen, String product, MarketDataQueryType type) {
+        this.product = product;
         this.type = type;
+        this.gen = gen;
     }
 
-    @Override
     public void produceRawExchangeData() throws Exception {
         HttpClient client = HttpClient.newHttpClient();
         CompletableFuture<WebSocket> wsFuture = client.newWebSocketBuilder()
-                .buildAsync(URI.create("wss://stream.binance.us:9443/ws"), new NovaPipeWebSocket());
+                .buildAsync(URI.create(gen.getUrl()), new NovaPipeWebSocket());
 
         wsFuture.thenAccept(webSocket -> {
             System.out.println("WebSocket connection established.");
-            String param = symbol + "@" + type.getStreamName();
-            String subscribeMessage = String.format("""
-                {
-                    "method": "SUBSCRIBE",
-                    "params": [
-                         "%s"
-                    ],
-                    "id": %d
-                }
-                """, param, id_counter);
-            id_counter += 1;
-            webSocket.sendText(subscribeMessage, true);
+            var message = gen.generateQueryMessage(product, type);
+            webSocket.sendText(message, true);
             webSocket.request(1);
         });
 
