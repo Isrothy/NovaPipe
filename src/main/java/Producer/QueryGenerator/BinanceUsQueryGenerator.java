@@ -26,4 +26,9 @@ public class BinanceUsQueryGenerator implements QueryGenerator {
     public String getUrl() {
         return "wss://stream.binance.us:9443/ws";
     }
+
+    @Override
+    public String getTag() {
+        return "binance.us";
+    }
 }

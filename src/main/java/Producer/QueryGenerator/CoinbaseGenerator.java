@@ -3,6 +3,7 @@ package Producer.QueryGenerator;
 import MarketDataQueryType.MarketDataQueryType;
 
 public class CoinbaseGenerator implements QueryGenerator {
+
     @Override
     public String generateQueryMessage(String productType, MarketDataQueryType queryType) {
         String channel = switch (queryType) {
@@ -22,4 +23,10 @@ public class CoinbaseGenerator implements QueryGenerator {
     public String getUrl() {
         return "wss://ws-feed.exchange.coinbase.com";
     }
+
+    @Override
+    public String getTag() {
+        return"coinbase";
+    }
+
 }
