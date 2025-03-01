@@ -4,15 +4,12 @@ import MarketDataType.Quote;
 import MarketDataType.Trade;
 import org.junit.jupiter.api.Test;
 
-import java.io.EOFException;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import DataChannel.DataChannel;
-import DataChannel.QueueChannel;
+import DataChannel.BlockingQueueChannel;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,7 +17,6 @@ import java.nio.file.Path;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import java.util.ArrayList;
 import java.util.List;
 
 class NormalizerTest {
@@ -33,7 +29,7 @@ class NormalizerTest {
         System.out.println("Test output file: " + outputFile.toAbsolutePath());
 
         // Create a channel (assuming QueueChannel is your implementation of DataChannel<String>).
-        DataChannel channel = new QueueChannel();
+        DataChannel channel = new BlockingQueueChannel();
 
         // Create and start the Normalizer, which reads from the channel and writes serialized objects.
         Normalizer normalizer = new Normalizer(channel, outputFile.toString());
@@ -97,7 +93,7 @@ class NormalizerTest {
         System.out.println("Test output file: " + outputFile.toAbsolutePath());
 
         // Create a channel (assuming QueueChannel is your implementation of DataChannel).
-        DataChannel channel = new QueueChannel();
+        DataChannel channel = new BlockingQueueChannel();
 
         // Create and start the Normalizer.
         Normalizer normalizer = new Normalizer(channel, outputFile.toString());
@@ -195,7 +191,7 @@ class NormalizerTest {
         System.out.println("Test output file: " + outputFile.toAbsolutePath());
 
         // Create a channel (assuming QueueChannel implements DataChannel<String>).
-        DataChannel channel = new QueueChannel();
+        DataChannel channel = new BlockingQueueChannel();
 
         // Create and start the Normalizer.
         Normalizer normalizer = new Normalizer(channel, outputFile.toString());

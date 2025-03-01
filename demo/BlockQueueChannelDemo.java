@@ -1,5 +1,5 @@
 import DataChannel.DataChannel;
-import DataChannel.QueueChannel;
+import DataChannel.BlockingQueueChannel;
 import MarketDataType.MarketDataQueryType;
 import Normalizer.Normalizer;
 import Producer.Producer;
@@ -9,11 +9,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 
-public class QueueChannelDemo {
+public class BlockQueueChannelDemo {
 
     public static void main(String[] args) throws Exception {
         // Create a shared channel for sending messages from the Producer to the Normalizer.
-        DataChannel channel = new QueueChannel();
+        DataChannel channel = new BlockingQueueChannel();
 
         // Create a temporary output file to store the normalized JSON messages.
         Path outputFile = Path.of("normalized_output.json");

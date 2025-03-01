@@ -20,15 +20,15 @@ class BinanceUsPayloadParserTest {
     @Test
     public void testParseTicker() throws Exception {
         String json = """
-        {
-          "u": 400900217,
-          "s": "BNBUSDT",
-          "b": "25.35190000",
-          "B": "31.21000000",
-          "a": "25.36520000",
-          "A": "40.66000000"
-        }
-        """;
+                {
+                  "u": 400900217,
+                  "s": "BNBUSDT",
+                  "b": "25.35190000",
+                  "B": "31.21000000",
+                  "a": "25.36520000",
+                  "A": "40.66000000"
+                }
+                """;
 
         JsonNode root = mapper.readTree(json);
         Quote quote = parser.parseTicker(root);
@@ -46,20 +46,20 @@ class BinanceUsPayloadParserTest {
     @Test
     public void testParseTrade() throws Exception {
         String json = """
-        {
-          "e": "trade",
-          "E": 1672515782136,
-          "s": "BNBBTC",
-          "t": 12345,
-          "p": "0.001",
-          "q": "100",
-          "b": "88",
-          "a": "50",
-          "T": 1672515782136,
-          "m": true,
-          "M": true
-        }
-        """;
+                {
+                  "e": "trade",
+                  "E": 1672515782136,
+                  "s": "BNBBTC",
+                  "t": 12345,
+                  "p": "0.001",
+                  "q": "100",
+                  "b": "88",
+                  "a": "50",
+                  "T": 1672515782136,
+                  "m": true,
+                  "M": true
+                }
+                """;
 
         JsonNode root = mapper.readTree(json);
         Trade trade = parser.parseTrade(root);

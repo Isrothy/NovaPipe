@@ -3,17 +3,17 @@ package DataChannel;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class QueueChannel implements DataChannel {
+public class BlockingQueueChannel implements DataChannel {
 
     private final BlockingQueue<String> queue;
     private volatile boolean closed;
 
-    public QueueChannel() {
+    public BlockingQueueChannel() {
         this.queue = new LinkedBlockingQueue<>();
         this.closed = false;
     }
 
-    public QueueChannel(int capacity) {
+    public BlockingQueueChannel(int capacity) {
         this.queue = new LinkedBlockingQueue<>(capacity);
         this.closed = false;
     }

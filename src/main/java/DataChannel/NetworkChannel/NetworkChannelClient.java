@@ -64,7 +64,8 @@ public class NetworkChannelClient implements DataChannel {
     private synchronized void closeResources() {
         try {
             if (socket != null) socket.close();
-        } catch (IOException ignored) { }
+        } catch (IOException ignored) {
+        }
         socket = null;
         reader = null;
     }

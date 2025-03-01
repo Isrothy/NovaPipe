@@ -12,12 +12,12 @@ public class BinanceUsQueryGenerator implements QueryGenerator {
             case QUOTE -> "bookTicker";
         });
         String subscribeMessage = String.format("""
-            {
-                "method": "SUBSCRIBE",
-                "params": ["%s"],
-                "id": %d
-            }
-            """, param, idCounter);
+                {
+                    "method": "SUBSCRIBE",
+                    "params": ["%s"],
+                    "id": %d
+                }
+                """, param, idCounter);
         idCounter += 1;
         return subscribeMessage;
     }
