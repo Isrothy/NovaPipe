@@ -54,11 +54,12 @@ public class ChronicleQueueChannelDemo {
         System.out.println("Queue directory: " + queueDir.toAbsolutePath());
 
         // Use a fixed output file for normalized JSON messages.
-        Path outputFile = Path.of("normalized_output_consumer_restart.json");
+        Path outputFile = Path.of("normalized_output_consumer_restart.jsonl");
         if (!Files.exists(outputFile)) {
             Files.createFile(outputFile);
         }
         System.out.println("Output file: " + outputFile.toAbsolutePath());
+        String tailerName = "tailer";
 
         // --- Producer Side ---
         // Create a persistent channel for the producer.
@@ -74,12 +75,12 @@ public class ChronicleQueueChannelDemo {
         producerThread.start();
 
         // --- Consumer Side (Phase 1) ---
-        DataChannel consumerChannel1 = new ChronicleQueueChannel(queueDir.toString());
+        DataChannel consumerChannel1 = new ChronicleQueueChannel(queueDir.toString(), tailerName);
         Normalizer consumer1 = new Normalizer(consumerChannel1, outputFile.toString());
         Thread consumerPhase1 = new Thread(consumer1);
         consumerPhase1.start();
         System.out.println("Consumer Phase 1 started.");
-        Thread.sleep(20000);
+        Thread.sleep(10000);
         System.out.println("Stopping Consumer Phase 1.");
         consumer1.stop();
         consumerPhase1.join();
@@ -88,13 +89,13 @@ public class ChronicleQueueChannelDemo {
         Thread.sleep(5000);
 
         // --- Consumer Side (Phase 2 / Restart) ---
-        DataChannel consumerChannel2 = new ChronicleQueueChannel(queueDir.toString());
+        DataChannel consumerChannel2 = new ChronicleQueueChannel(queueDir.toString(), tailerName);
         Normalizer consumer2 = new Normalizer(consumerChannel2, outputFile.toString());
         Thread consumerPhase2 = new Thread(consumer2);
         consumerPhase2.start();
         System.out.println("Consumer Phase 2 started.");
         // Let the restarted consumer run for another 20 seconds.
-        Thread.sleep(20000);
+        Thread.sleep(10000);
         System.out.println("Stopping Consumer Phase 2.");
         consumer2.stop();
         consumerPhase2.join();

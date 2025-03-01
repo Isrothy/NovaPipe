@@ -19,8 +19,20 @@ public class ChronicleQueueChannel implements DataChannel {
      */
     public ChronicleQueueChannel(String queueDir) {
         this.queue = ChronicleQueue.singleBuilder(Path.of(queueDir)).build();
-        this.appender = queue.acquireAppender();
+        this.appender = queue.createAppender();
         this.tailer = queue.createTailer();
+    }
+
+    /**
+     * Creates a persistent channel with restartable tailer
+     *
+     * @param queueDir the directory where the queue files will be stored
+     * @param tailerName the name of the tailer
+     */
+    public ChronicleQueueChannel(String queueDir, String tailerName) {
+        this.queue = ChronicleQueue.singleBuilder(Path.of(queueDir)).build();
+        this.appender = queue.createAppender();
+        this.tailer = queue.createTailer(tailerName);
     }
 
     /**

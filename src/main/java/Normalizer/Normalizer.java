@@ -62,7 +62,6 @@ public class Normalizer implements Runnable {
     }
 
     private void process(String rawData) throws IOException {
-//        System.out.println("Processing data: " + rawData);
         JsonNode jsonNode = objectMapper.readTree(rawData);
         var obj = parse(jsonNode);
         if (obj != null) {
@@ -86,9 +85,6 @@ public class Normalizer implements Runnable {
         }
         String typeStr = matcher.group(1);
         String exchange = matcher.group(2);
-
-//        System.out.println("Type: " + typeStr);
-//        System.out.println("Exchange: " + exchange);
 
         try {
             MarketDataQueryType type = MarketDataQueryType.fromString(typeStr);

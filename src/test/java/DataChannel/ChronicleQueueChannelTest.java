@@ -1,10 +1,5 @@
 package DataChannel;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import DataChannel.ChronicleQueueChannel;
-import DataChannel.ChannelException;
-import DataChannel.DataChannel;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
@@ -12,8 +7,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import static org.junit.jupiter.api.Assertions.*;
 class ChronicleQueueChannelTest {
 
     @Test
@@ -54,6 +49,47 @@ class ChronicleQueueChannelTest {
         try (DataChannel channel = new ChronicleQueueChannel(queueDir.toString())) {
             // Since the tailer starts at the beginning, read exactly messageCount messages.
             for (int i = 0; i < messageCount; i++) {
+                String msg = channel.receive();
+                messagesReceived.add(msg);
+            }
+        } finally {
+            deleteDirectoryRecursively(queueDir);
+        }
+
+        // Verify that the messages sent are exactly the ones received.
+        assertEquals(messagesSent, messagesReceived);
+    }
+
+    @Test
+    public void testRestartableTailer() throws Exception {
+        // Create a temporary directory for the Chronicle Queue files.
+        Path queueDir = Files.createTempDirectory("chronicleQueueTest");
+        List<String> messagesSent = new ArrayList<>();
+        List<String> messagesReceived = new ArrayList<>();
+        int messageCount1 = 5;
+        int messageCount2 = 5;
+
+        // Phase 1: Write messages to the queue.
+        try (DataChannel channel = new ChronicleQueueChannel(queueDir.toString(), "a")) {
+            for (int i = 0; i < messageCount1; i++) {
+                String msg = "Message " + i;
+                channel.send(msg);
+                messagesSent.add(msg);
+            }
+            for (int i = 0; i < messageCount1; i++) {
+                String msg = channel.receive();
+                messagesReceived.add(msg);
+            }
+            for (int i = messageCount1; i < messageCount1 + messageCount2; i++) {
+                String msg = "Message " + i;
+                channel.send(msg);
+                messagesSent.add(msg);
+            }
+        }
+
+        // Phase 2: Create a new channel instance to read the persisted messages.
+        try (DataChannel channel = new ChronicleQueueChannel(queueDir.toString(), "a")) {
+            for (int i = 0; i < messageCount2; i++) {
                 String msg = channel.receive();
                 messagesReceived.add(msg);
             }
