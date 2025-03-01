@@ -13,12 +13,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 
-public class Producer {
+public class Producer implements Runnable {
     private final QueryGenerator gen;
     private final String product;
     private final MarketDataQueryType type;
     private final DataChannel channel;
     private boolean firstMessageReceived = false;
+    private volatile boolean running = true;
 
     public Producer(QueryGenerator gen, String product, MarketDataQueryType type, DataChannel channel) {
         this.product = product;
@@ -27,19 +28,33 @@ public class Producer {
         this.channel = channel;
     }
 
-    public void produceRawExchangeData() throws Exception {
-        HttpClient client = HttpClient.newHttpClient();
-        CompletableFuture<WebSocket> wsFuture = client.newWebSocketBuilder()
-                .buildAsync(URI.create(gen.getUrl()), new NovaPipeWebSocket());
+    public void stop() {
+        running = false;
+    }
 
-        wsFuture.thenAccept(webSocket -> {
-            System.out.println("WebSocket connection established.");
-            var message = gen.generateQueryMessage(product, type);
-            webSocket.sendText(message, true);
-            webSocket.request(1);
-        });
+    public void run() {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            CompletableFuture<WebSocket> wsFuture = client.newWebSocketBuilder()
+                    .buildAsync(URI.create(gen.getUrl()), new NovaPipeWebSocket());
 
-        Thread.currentThread().join();
+            wsFuture.thenAccept(webSocket -> {
+                System.out.println("WebSocket connection established.");
+                var message = gen.generateQueryMessage(product, type);
+                webSocket.sendText(message, true);
+                webSocket.request(1);
+            });
+
+            while (running && !Thread.currentThread().isInterrupted()) {
+                // Sleep a bit (e.g., 1 second) to avoid busy-waiting.
+                Thread.sleep(1000);
+            }
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt(); // reset interruption flag
+            System.err.println("Producer interrupted.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

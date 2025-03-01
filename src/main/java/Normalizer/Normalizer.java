@@ -45,7 +45,7 @@ public class Normalizer implements Runnable {
 
     @Override
     public void run() {
-        while (running) {
+        while (running && !Thread.currentThread().isInterrupted()) {
             try {
                 String rawData = channel.receive();
                 if (POISON_PILL.equals(rawData)) {
