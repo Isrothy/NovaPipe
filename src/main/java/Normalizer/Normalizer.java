@@ -5,6 +5,8 @@ import DataChannel.DataChannel;
 
 import java.io.BufferedWriter;
 
+import Normalizer.PayloadParser.BinanceUsPayloadParser;
+import Normalizer.PayloadParser.CoinbasePayloadParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -76,5 +78,13 @@ public class Normalizer implements Runnable {
         String symbol = matcher.group(1);
         String exchange = matcher.group(2);
 
+        return switch (exchange) {
+            case "binance.us" -> new BinanceUsPayloadParser().parseTicker(payloadNode);
+            case "coinbase" -> new CoinbasePayloadParser().parseTicker(payloadNode);
+            default -> {
+                System.err.printf("Unsupported exchange: %s", exchange);
+                yield null;
+            }
+        };
     }
 }
