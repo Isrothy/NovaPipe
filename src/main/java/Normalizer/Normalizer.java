@@ -52,6 +52,9 @@ public class Normalizer implements Runnable {
                     System.out.println("Received poison pill. Normalizer stopping.");
                     break;
                 }
+                if (rawData == null) {
+                    continue;
+                }
                 process(rawData);
                 System.out.println("Processed data: " + rawData);
             } catch (ChannelException | IOException e) {
@@ -62,6 +65,7 @@ public class Normalizer implements Runnable {
     }
 
     private void process(String rawData) throws IOException {
+//        System.out.println("Processing data: " + rawData);
         JsonNode jsonNode = objectMapper.readTree(rawData);
         var obj = parse(jsonNode);
         if (obj != null) {

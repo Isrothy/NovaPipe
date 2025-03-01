@@ -60,12 +60,14 @@ public class Producer {
                 System.out.println("Ignoring first validation message.");
             } else {
                 try {
-                    channel.send(String.format("""
+                    String msg = String.format("""
                             {
                                 "tag": "%s@%s",
                                 "payload": %s
                             }
-                            """, type.toString(), gen.getTag(), data.toString()));
+                            """, type.toString(), gen.getTag(), data.toString());
+                    msg = msg.replaceAll("[\\r\\n]+", "");// Remove newlines
+                    channel.send(msg);
                 } catch (ChannelException e) {
                     throw new RuntimeException(e);
                 }
@@ -98,6 +100,7 @@ public class Producer {
         @Override
         public void onError(WebSocket webSocket, Throwable error) {
             System.out.println("WebSocket error: " + error.getMessage());
+            throw new RuntimeException("WebSocket encountered an error. Stopping producer.", error);
         }
     }
 
