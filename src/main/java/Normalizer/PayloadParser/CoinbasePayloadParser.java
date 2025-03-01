@@ -1,7 +1,8 @@
 package Normalizer.PayloadParser;
 
-import MarketDataType.Ticker;
+import MarketDataType.Quote;
 import MarketDataType.Trade;
+import Utils.JsonUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.time.ZonedDateTime;
@@ -12,7 +13,7 @@ public class CoinbasePayloadParser implements Parser {
     private final String platform = "coinbase";
 
     @Override
-    public Ticker parseTicker(JsonNode root) {
+    public Quote parseTicker(JsonNode root) {
         //// Ticker messsage
         //{
         //  "type": "ticker",
@@ -34,22 +35,22 @@ public class CoinbasePayloadParser implements Parser {
         //  "last_size": "11.4396987"
         //}
 
-        var sequence = root.get("sequence").asLong();
-        var product = root.get("product_id").asText();
-        var bestBid = root.get("best_bid").asText();
-        var bestBidSize = root.get("best_bid_size").asText();
-        var bestAsk = root.get("best_ask").asText();
-        var bestAskSize = root.get("best_ask_size").asText();
-        var price = root.get("price").asText();
-        var open24h = root.get("open_24h").asText();
-        var volume24h = root.get("volume_24h").asText();
-        var low24h = root.get("low_24h").asText();
-        var high24h = root.get("high_24h").asText();
-        var volume30d = root.get("volume_30d").asText();
-        var side = root.get("side").asText();
-        var time = root.get("time").asText();
-        var tradeId = root.get("trade_id").asLong();
-        var lastSize = root.get("last_size").asText();
+        var sequence = JsonUtil.getValue(root.get("sequence"), JsonNode::asLong);
+        var product = JsonUtil.getValue(root.get("product_id"), JsonNode::asText);
+        var bestBid = JsonUtil.getValue(root.get("best_bid"), JsonNode::asText);
+        var bestBidSize = JsonUtil.getValue(root.get("best_bid_size"), JsonNode::asText);
+        var bestAsk = JsonUtil.getValue(root.get("best_ask"), JsonNode::asText);
+        var bestAskSize = JsonUtil.getValue(root.get("best_ask_size"), JsonNode::asText);
+        var price = JsonUtil.getValue(root.get("price"), JsonNode::asText);
+        var open24h = JsonUtil.getValue(root.get("open_24h"), JsonNode::asText);
+        var volume24h = JsonUtil.getValue(root.get("volume_24h"), JsonNode::asText);
+        var low24h = JsonUtil.getValue(root.get("low_24h"), JsonNode::asText);
+        var high24h = JsonUtil.getValue(root.get("high_24h"), JsonNode::asText);
+        var volume30d = JsonUtil.getValue(root.get("volume_30d"), JsonNode::asText);
+        var side = JsonUtil.getValue(root.get("side"), JsonNode::asText);
+        var time = JsonUtil.getValue(root.get("time"), JsonNode::asText);
+        var tradeId = JsonUtil.getValue(root.get("trade_id"), JsonNode::asLong);
+        var lastSize = JsonUtil.getValue(root.get("last_size"), JsonNode::asText);
         //public record Ticker(
         //        String platform,
         //        long sequence,
@@ -71,24 +72,24 @@ public class CoinbasePayloadParser implements Parser {
         //) implements Serializable {
         //
         //}
-        return new Ticker(
+        return new Quote(
                 platform,
                 sequence,
                 product.replace("-", ""),
-                new BigDecimal(bestBid),
-                new BigDecimal(bestBidSize),
-                new BigDecimal(bestAsk),
-                new BigDecimal(bestAskSize),
-                new BigDecimal(price),
-                new BigDecimal(open24h),
-                new BigDecimal(volume24h),
-                new BigDecimal(low24h),
-                new BigDecimal(high24h),
-                new BigDecimal(volume30d),
+                (bestBid == null) ? null : new BigDecimal(bestBid),
+                (bestBidSize == null) ? null : new BigDecimal(bestBidSize),
+                (bestAsk == null) ? null : new BigDecimal(bestAsk),
+                (bestAskSize == null) ? null : new BigDecimal(bestAskSize),
+                (price == null) ? null : new BigDecimal(price),
+                (open24h == null) ? null : new BigDecimal(open24h),
+                (volume24h == null) ? null : new BigDecimal(volume24h),
+                (low24h == null) ? null : new BigDecimal(low24h),
+                (high24h == null) ? null : new BigDecimal(high24h),
+                (volume30d == null) ? null : new BigDecimal(volume30d),
                 side,
-                ZonedDateTime.parse(time).toInstant(),
-                String.valueOf(tradeId),
-                new BigDecimal(lastSize)
+                (time == null) ? null : ZonedDateTime.parse(time).toInstant(),
+                (tradeId == null) ? null : String.valueOf(tradeId),
+                (lastSize == null) ? null : new BigDecimal(lastSize)
         );
     }
 
@@ -107,15 +108,15 @@ public class CoinbasePayloadParser implements Parser {
         //  "side": "sell"
         //}
 
-        var tradeId = root.get("trade_id").asLong();
-        var sequence = root.get("sequence").asLong();
-        var makerOrderId = root.get("maker_order_id").asText();
-        var takerOrderId = root.get("taker_order_id").asText();
-        var time = root.get("time").asText();
-        var product = root.get("product_id").asText();
-        var size = root.get("size").asText();
-        var price = root.get("price").asText();
-        var side = root.get("side").asText();
+        var tradeId = JsonUtil.getValue(root.get("trade_id"), JsonNode::asLong);
+        var sequence = JsonUtil.getValue(root.get("sequence"), JsonNode::asLong);
+        var makerOrderId = JsonUtil.getValue(root.get("maker_order_id"), JsonNode::asText);
+        var takerOrderId = JsonUtil.getValue(root.get("taker_order_id"), JsonNode::asText);
+        var time = JsonUtil.getValue(root.get("time"), JsonNode::asText);
+        var product = JsonUtil.getValue(root.get("product_id"), JsonNode::asText);
+        var size = JsonUtil.getValue(root.get("size"), JsonNode::asText);
+        var price = JsonUtil.getValue(root.get("price"), JsonNode::asText);
+        var side = JsonUtil.getValue(root.get("side"), JsonNode::asText);
         //public record Trade(
         //        String platform,
         //        Instant eventTime,
@@ -133,14 +134,14 @@ public class CoinbasePayloadParser implements Parser {
         return new Trade(
                 platform,
                 null,
-                product.replace("-", ""),
+                (product == null) ? null : product.replace("-", ""),
                 tradeId,
-                new BigDecimal(price),
-                new BigDecimal(size),
+                (price == null) ? null : new BigDecimal(price),
+                (size == null) ? null : new BigDecimal(size),
                 makerOrderId,
                 takerOrderId,
                 side,
-                ZonedDateTime.parse(time).toInstant(),
+                (time == null) ? null : ZonedDateTime.parse(time).toInstant(),
                 null
         );
 

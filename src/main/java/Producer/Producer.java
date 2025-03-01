@@ -61,7 +61,7 @@ public class Producer {
                                         "payload": %s
                                     }
                                 """
-                        , gen.getTag(), type, data.toString()));
+                        , type.toString(), gen.getTag(), data.toString()));
             } catch (ChannelException e) {
                 throw new RuntimeException(e);
             }

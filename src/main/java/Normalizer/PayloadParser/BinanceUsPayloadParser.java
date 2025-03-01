@@ -1,25 +1,26 @@
 package Normalizer.PayloadParser;
 
-import MarketDataType.Ticker;
+import MarketDataType.Quote;
 import MarketDataType.Trade;
+import Utils.JsonUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.time.Instant;
 import java.math.BigDecimal;
 
 public class BinanceUsPayloadParser implements Parser {
-
+    private final String platform = "binance.us";
     @Override
-    public Ticker parseTicker(JsonNode root) {
-        var updateId = root.get("u").asLong();
-        var product = root.get("s").asText();
-        var bestBid = root.get("b").asText();
-        var bestBidSize = root.get("B").asText();
-        var bestAsk = root.get("a").asText();
-        var bestAskSize = root.get("A").asText();
+    public Quote parseTicker(JsonNode root) {
+        var updateId = JsonUtil.getValue(root.get("u"), JsonNode::asLong);
+        var product = JsonUtil.getValue(root.get("s"), JsonNode::asText);
+        var bestBid = JsonUtil.getValue(root.get("b"), JsonNode::asText);
+        var bestBidSize = JsonUtil.getValue(root.get("B"), JsonNode::asText);
+        var bestAsk = JsonUtil.getValue(root.get("a"), JsonNode::asText);
+        var bestAskSize = JsonUtil.getValue(root.get("A"), JsonNode::asText);
 
-        return new Ticker(
-                "binance.us",
+        return new Quote(
+                platform,
                 updateId,
                 product,
                 new BigDecimal(bestBid),
@@ -54,15 +55,15 @@ public class BinanceUsPayloadParser implements Parser {
         //  "m": true,        // Is the buyer the market maker?
         //  "M": true         // Ignore
         //}
-        var eventTime = root.get("E").asLong();
-        var product = root.get("s").asText();
-        var tradeId = root.get("t").asLong();
-        var price = root.get("p").asText();
-        var size = root.get("q").asText();
-        var buyerId = root.get("b").asText();
-        var sellerId = root.get("a").asText();
-        var tradeTime = root.get("T").asLong();
-        var buyerIsMarketMaker = root.get("m").asBoolean();
+        var eventTime = JsonUtil.getValue(root.get("E"), JsonNode::asLong);
+        var product = JsonUtil.getValue(root.get("s"), JsonNode::asText);
+        var tradeId = JsonUtil.getValue(root.get("t"), JsonNode::asLong);
+        var price = JsonUtil.getValue(root.get("p"), JsonNode::asText);
+        var size = JsonUtil.getValue(root.get("q"), JsonNode::asText);
+        var buyerId = JsonUtil.getValue(root.get("b"), JsonNode::asText);
+        var sellerId = JsonUtil.getValue(root.get("a"), JsonNode::asText);
+        var tradeTime = JsonUtil.getValue(root.get("T"), JsonNode::asLong);
+        var buyerIsMarketMaker = JsonUtil.getValue(root.get("m"), JsonNode::asBoolean);
 
         //public record Trade(
         //        String platform,
@@ -78,17 +79,20 @@ public class BinanceUsPayloadParser implements Parser {
         //        Boolean buyerIsMarketMaker
         //) implements Serializable {
         //}
+
+//        System.out.println(eventTime != null);
+
         return new Trade(
-                "binance.us",
-                Instant.ofEpochMilli(eventTime),
+                platform,
+                (eventTime != null) ? Instant.ofEpochMilli(eventTime) : null,
                 product,
                 tradeId,
-                new BigDecimal(price),
-                new BigDecimal(size),
+                (price != null) ? new BigDecimal(price) : null,
+                (size!= null) ? new BigDecimal(size) : null,
                 buyerId,
                 sellerId,
                 null,
-                Instant.ofEpochMilli(tradeTime),
+                (tradeTime != null) ? Instant.ofEpochMilli(tradeTime) : null,
                 buyerIsMarketMaker
         );
     }

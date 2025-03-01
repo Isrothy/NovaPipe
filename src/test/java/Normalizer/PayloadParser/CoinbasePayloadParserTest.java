@@ -6,10 +6,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import MarketDataType.Ticker;
+import MarketDataType.Quote;
 import MarketDataType.Trade;
-import Normalizer.PayloadParser.CoinbasePayloadParser;
-import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -23,7 +21,7 @@ class CoinbasePayloadParserTest {
     public void testParseTicker() throws Exception {
         String json = """
         {
-          "type": "ticker",
+          "type": "quote",
           "sequence": 37475248783,
           "product_id": "ETH-USD",
           "price": "1285.22",
@@ -44,22 +42,22 @@ class CoinbasePayloadParserTest {
         """;
 
         JsonNode root = mapper.readTree(json);
-        Ticker ticker = parser.parseTicker(root);
+        Quote quote = parser.parseTicker(root);
 
-        assertEquals("coinbase", ticker.platform());
-        assertEquals(37475248783L, ticker.sequence());
+        assertEquals("coinbase", quote.platform());
+        assertEquals(37475248783L, quote.sequence());
         // The parser removes hyphens from the product field.
-        assertEquals("ETHUSD", ticker.product());
-        assertEquals(new BigDecimal("1285.04"), ticker.bestBid());
-        assertEquals(new BigDecimal("0.46688654"), ticker.bestBidSize());
-        assertEquals(new BigDecimal("1285.27"), ticker.bestAsk());
-        assertEquals(new BigDecimal("1.56637040"), ticker.bestAskSize());
-        assertEquals(new BigDecimal("1285.22"), ticker.price());
+        assertEquals("ETHUSD", quote.product());
+        assertEquals(new BigDecimal("1285.04"), quote.bestBid());
+        assertEquals(new BigDecimal("0.46688654"), quote.bestBidSize());
+        assertEquals(new BigDecimal("1285.27"), quote.bestAsk());
+        assertEquals(new BigDecimal("1.56637040"), quote.bestAskSize());
+        assertEquals(new BigDecimal("1285.22"), quote.price());
         // Compare time conversion from ISO string to Instant.
         Instant expectedTime = ZonedDateTime.parse("2022-10-19T23:28:22.061769Z").toInstant();
-        assertEquals(expectedTime, ticker.time());
-        assertEquals("370843401", ticker.trade_id());
-        assertEquals(new BigDecimal("11.4396987"), ticker.last_size());
+        assertEquals(expectedTime, quote.time());
+        assertEquals("370843401", quote.trade_id());
+        assertEquals(new BigDecimal("11.4396987"), quote.last_size());
     }
 
     @Test

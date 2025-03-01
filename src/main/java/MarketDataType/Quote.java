@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-public record Ticker(
+public record Quote(
         String platform,
         long sequence,
         String product,

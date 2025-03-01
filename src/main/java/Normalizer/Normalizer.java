@@ -2,21 +2,23 @@ package Normalizer;
 
 import DataChannel.ChannelException;
 import DataChannel.DataChannel;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.BufferedWriter;
 
+import MarketDataType.MarketDataQueryType;
 import Normalizer.PayloadParser.BinanceUsPayloadParser;
 import Normalizer.PayloadParser.CoinbasePayloadParser;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Normalizer implements Runnable {
 
@@ -38,6 +40,7 @@ public class Normalizer implements Runnable {
                 StandardOpenOption.APPEND
         );
         this.objectMapper = new ObjectMapper();
+        this.objectMapper.registerModule(new JavaTimeModule());
     }
 
     @Override
@@ -60,31 +63,48 @@ public class Normalizer implements Runnable {
 
     private void process(String rawData) throws IOException {
         JsonNode jsonNode = objectMapper.readTree(rawData);
-        String data = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonNode);
-        writer.write(data);
-        writer.newLine();
-        writer.flush();
+        var obj = parse(jsonNode);
+//        System.out.println(obj);
+        if (obj != null) {
+            String output = objectMapper.writeValueAsString(obj);
+            writer.write(output);
+            writer.newLine();
+            writer.flush();
+        } else {
+            System.err.println("Parsed object is null; nothing to write.");
+        }
     }
 
-    private Object parse(JsonNode root) {
+    private Serializable parse(JsonNode root) {
         String tag = root.get("tag").asText();
         JsonNode payloadNode = root.get("payload");
         Pattern pattern = Pattern.compile("([^@]+)@([^@]+)");
         Matcher matcher = pattern.matcher(tag);
         if (!matcher.matches()) {
-            System.err.printf("Invalid tag format: %s", tag);
+            System.err.printf("Invalid tag format: %s\n", tag);
             return null;
         }
-        String symbol = matcher.group(1);
+        String typeStr = matcher.group(1);
         String exchange = matcher.group(2);
 
-        return switch (exchange) {
-            case "binance.us" -> new BinanceUsPayloadParser().parseTicker(payloadNode);
-            case "coinbase" -> new CoinbasePayloadParser().parseTicker(payloadNode);
-            default -> {
-                System.err.printf("Unsupported exchange: %s", exchange);
-                yield null;
-            }
-        };
+//        System.out.println("Type: " + typeStr);
+//        System.out.println("Exchange: " + exchange);
+
+        try {
+            MarketDataQueryType type = MarketDataQueryType.fromString(typeStr);
+            return switch (exchange) {
+                case "binance.us" -> new BinanceUsPayloadParser().parse(type, payloadNode);
+                case "coinbase" -> new CoinbasePayloadParser().parse(type, payloadNode);
+                default -> {
+                    System.err.printf("Unsupported exchange: %s\n", exchange);
+                    yield null;
+                }
+            };
+        } catch (IllegalArgumentException e) {
+            System.err.printf("Failed to parse type: %s\n", typeStr);
+            return null;
+        }
+
+
     }
 }

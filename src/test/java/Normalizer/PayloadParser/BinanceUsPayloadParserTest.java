@@ -3,18 +3,14 @@ package Normalizer.PayloadParser;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import MarketDataType.Ticker;
+import MarketDataType.Quote;
 import MarketDataType.Trade;
-import Normalizer.PayloadParser.CoinbasePayloadParser;
-import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 
 class BinanceUsPayloadParserTest {
 
@@ -35,15 +31,15 @@ class BinanceUsPayloadParserTest {
         """;
 
         JsonNode root = mapper.readTree(json);
-        Ticker ticker = parser.parseTicker(root);
+        Quote quote = parser.parseTicker(root);
 
-        assertEquals("binance.us", ticker.platform());
-        assertEquals(400900217L, ticker.sequence());
-        assertEquals("BNBUSDT", ticker.product());
-        assertEquals(new BigDecimal("25.35190000"), ticker.bestBid());
-        assertEquals(new BigDecimal("31.21000000"), ticker.bestBidSize());
-        assertEquals(new BigDecimal("25.36520000"), ticker.bestAsk());
-        assertEquals(new BigDecimal("40.66000000"), ticker.bestAskSize());
+        assertEquals("binance.us", quote.platform());
+        assertEquals(400900217L, quote.sequence());
+        assertEquals("BNBUSDT", quote.product());
+        assertEquals(new BigDecimal("25.35190000"), quote.bestBid());
+        assertEquals(new BigDecimal("31.21000000"), quote.bestBidSize());
+        assertEquals(new BigDecimal("25.36520000"), quote.bestAsk());
+        assertEquals(new BigDecimal("40.66000000"), quote.bestAskSize());
         // Additional fields may be null if not set in the parser.
     }
 
