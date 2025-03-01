@@ -18,6 +18,7 @@ public class Producer {
     private final String product;
     private final MarketDataQueryType type;
     private final DataChannel channel;
+    private boolean firstMessageReceived = false;
 
     public Producer(QueryGenerator gen, String product, MarketDataQueryType type, DataChannel channel) {
         this.product = product;
@@ -54,16 +55,20 @@ public class Producer {
         @Override
         public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
             System.out.println("Received message: " + data);
-            try {
-                channel.send(String.format("""
-                                    {
-                                        "tag": "%s@%s",
-                                        "payload": %s
-                                    }
-                                """
-                        , type.toString(), gen.getTag(), data.toString()));
-            } catch (ChannelException e) {
-                throw new RuntimeException(e);
+            if (!firstMessageReceived) {
+                firstMessageReceived = true;
+                System.out.println("Ignoring first validation message.");
+            } else {
+                try {
+                    channel.send(String.format("""
+                            {
+                                "tag": "%s@%s",
+                                "payload": %s
+                            }
+                            """, type.toString(), gen.getTag(), data.toString()));
+                } catch (ChannelException e) {
+                    throw new RuntimeException(e);
+                }
             }
             webSocket.request(1);
             return CompletableFuture.completedFuture(null);

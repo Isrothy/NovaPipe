@@ -9,7 +9,7 @@ public class BinanceUsQueryGenerator implements QueryGenerator {
     public String generateQueryMessage(String productType, MarketDataQueryType queryType) {
         String param = productType + "@" + (switch (queryType) {
             case TRADE -> "trade";
-            case QUOTE -> "ticker";
+            case QUOTE -> "bookTicker";
         });
         String subscribeMessage = String.format("""
             {

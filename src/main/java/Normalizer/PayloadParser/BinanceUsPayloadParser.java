@@ -12,13 +12,41 @@ public class BinanceUsPayloadParser implements Parser {
     private final String platform = "binance.us";
     @Override
     public Quote parseTicker(JsonNode root) {
+        //{
+        //  "u":400900217,     // order book updateId
+        //  "s":"BNBUSDT",     // symbol
+        //  "b":"25.35190000", // best bid price
+        //  "B":"31.21000000", // best bid qty
+        //  "a":"25.36520000", // best ask price
+        //  "A":"40.66000000"  // best ask qty
+        //}
         var updateId = JsonUtil.getValue(root.get("u"), JsonNode::asLong);
         var product = JsonUtil.getValue(root.get("s"), JsonNode::asText);
         var bestBid = JsonUtil.getValue(root.get("b"), JsonNode::asText);
         var bestBidSize = JsonUtil.getValue(root.get("B"), JsonNode::asText);
         var bestAsk = JsonUtil.getValue(root.get("a"), JsonNode::asText);
         var bestAskSize = JsonUtil.getValue(root.get("A"), JsonNode::asText);
-
+        //ublic record Quote(
+        //        String platform,
+        //        long sequence,
+        //        String product,
+        //        BigDecimal bestBid,
+        //        BigDecimal bestBidSize,
+        //        BigDecimal bestAsk,
+        //        BigDecimal bestAskSize,
+        //        BigDecimal price,
+        //        BigDecimal open24h,
+        //        BigDecimal volume24h,
+        //        BigDecimal low24h,
+        //        BigDecimal high24h,
+        //        BigDecimal volume30d,
+        //        String side,
+        //        Instant time,
+        //        String trade_id,
+        //        BigDecimal last_size
+        //) implements Serializable {
+        //
+        //}
         return new Quote(
                 platform,
                 updateId,
