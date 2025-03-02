@@ -4,6 +4,8 @@ import DataChannel.ChannelException;
 import DataChannel.DataChannel;
 import MarketDataType.MarketDataQueryType;
 import Producer.QueryGenerator.QueryGenerator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -28,6 +30,7 @@ public class Producer implements Runnable {
     private final DataChannel channel;
     private boolean firstMessageReceived = false;
     private volatile boolean running = true;
+    private static final Logger logger = LogManager.getLogger(Producer.class);
 
     /**
      * Constructs a {@code Producer} instance that subscribes to market data.
@@ -60,7 +63,7 @@ public class Producer implements Runnable {
                     .buildAsync(URI.create(gen.getUrl()), new NovaPipeWebSocket());
 
             wsFuture.thenAccept(webSocket -> {
-                System.out.println("WebSocket connection established.");
+                logger.info("WebSocket connection established.");
                 var message = gen.generateQueryMessage(product, type);
                 webSocket.sendText(message, true);
                 webSocket.request(1);
@@ -72,7 +75,7 @@ public class Producer implements Runnable {
             }
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt(); // reset interruption flag
-            System.err.println("Producer interrupted.");
+            logger.error("Producer interrupted.");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -102,10 +105,10 @@ public class Producer implements Runnable {
          */
         @Override
         public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
-            System.out.println("Received message: " + data);
+            logger.info("Received message: {}", data);
             if (!firstMessageReceived) {
                 firstMessageReceived = true;
-                System.out.println("Ignoring first validation message.");
+                logger.info("Ignoring first validation message.");
             } else {
                 try {
                     String msg = String.format("""
@@ -133,7 +136,7 @@ public class Producer implements Runnable {
          */
         @Override
         public CompletionStage<?> onPing(WebSocket webSocket, ByteBuffer message) {
-            System.out.println("Received ping: " + new String(message.array()));
+            logger.info("Received ping: {}", new String(message.array()));
             webSocket.sendPong(message);
             webSocket.request(1);
             return CompletableFuture.completedFuture(null);
@@ -148,7 +151,7 @@ public class Producer implements Runnable {
          */
         @Override
         public CompletionStage<?> onPong(WebSocket webSocket, ByteBuffer message) {
-            System.out.println("Received pong: " + new String(message.array()));
+            logger.info("Received pong: {}", new String(message.array()));
             webSocket.request(1);
             return CompletableFuture.completedFuture(null);
         }
@@ -156,26 +159,25 @@ public class Producer implements Runnable {
         /**
          * Handles the closure of the WebSocket.
          *
-         * @param webSocket   the WebSocket on which the message has been received
-         * @param statusCode  the status code
-         * @param reason      the reason
-         *
-         * @return
+         * @param webSocket  the WebSocket on which the message has been received
+         * @param statusCode the status code
+         * @param reason     the reason
          */
         @Override
         public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
-            System.out.println("WebSocket closed: " + statusCode + " " + reason);
+            logger.info("WebSocket closed: {} {}", statusCode, reason);
             return CompletableFuture.completedFuture(null);
         }
 
         /**
          * Handles errors that occur during WebSocket communication.
+         *
          * @param webSocket the WebSocket on which the error has occurred
          * @param error     the error
          */
         @Override
         public void onError(WebSocket webSocket, Throwable error) {
-            System.out.println("WebSocket error: " + error.getMessage());
+            logger.info("WebSocket error: {}", error.getMessage());
             throw new RuntimeException("WebSocket encountered an error. Stopping producer.", error);
         }
     }

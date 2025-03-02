@@ -34,7 +34,7 @@ public class ChannelException extends Exception {
      * Constructs a new {@code ChannelException} with the specified detail message and cause.
      *
      * @param message The detail message describing the error.
-     * @param cause The cause of the exception, which may be another exception.
+     * @param cause   The cause of the exception, which may be another exception.
      */
     public ChannelException(String message, Throwable cause) {
         super(message, cause);

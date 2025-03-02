@@ -12,7 +12,7 @@ public class CoinbaseGenerator implements QueryGenerator {
      * Generates a query message for subscribing to Coinbase's WebSocket feed.
      *
      * @param productType the product type to subscribe to (e.g. "BTC-USD")
-     * @param queryType the type of query to subscribe to (e.g. TRADE, QUOTE)
+     * @param queryType   the type of query to subscribe to (e.g. TRADE, QUOTE)
      * @return a JSON-formatted query message
      */
     @Override

@@ -4,6 +4,8 @@ import MarketDataType.Quote;
 import MarketDataType.Trade;
 import Utils.JsonUtil;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -20,6 +22,7 @@ import java.time.Instant;
  */
 public class BinanceUsPayloadParser implements Parser {
     private final String platform = "binance.us";
+    private static final Logger logger = LogManager.getLogger(BinanceUsPayloadParser.class);
 
     /**
      * Parses an order book update message from Binance.US WebSocket feed into a {@link Quote} object.
@@ -96,7 +99,7 @@ public class BinanceUsPayloadParser implements Parser {
                     null
             );
         } catch (Exception e) {
-            System.err.printf("Failed to parse trade: %s\n. Error: %s\n", root.toString(), e.getMessage());
+            logger.error("Failed to parse trade: {}. Error: {}", root.toString(), e.getMessage());
             return null;
         }
     }
@@ -177,7 +180,7 @@ public class BinanceUsPayloadParser implements Parser {
                     buyerIsMarketMaker
             );
         } catch (Exception e) {
-            System.err.printf("Failed to parse trade: %s\n. Error: %s\n", root.toString(), e.getMessage());
+            logger.error("Failed to parse trade: {}. Error: {}", root.toString(), e.getMessage());
             return null;
         }
     }

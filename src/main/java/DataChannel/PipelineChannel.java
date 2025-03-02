@@ -1,5 +1,8 @@
 package DataChannel;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +23,6 @@ import java.util.List;
  * pipeline.send("test message");
  * String received = pipeline.receive();
  * }</pre>
- *
  */
 public class PipelineChannel implements DataChannel {
     private final DataChannel inputChannel;
@@ -28,7 +30,7 @@ public class PipelineChannel implements DataChannel {
     private final List<Thread> forwarderThreads = new ArrayList<>();
     private final List<DataChannel> channels = new ArrayList<>();
     private volatile boolean closed = false;
-
+    private static final Logger logger = LogManager.getLogger(PipelineChannel.class);
 
     /**
      * Constructs a pipeline from the given {@link DataChannel} instances.
@@ -75,7 +77,7 @@ public class PipelineChannel implements DataChannel {
                     dest.send(msg);
                 }
             } catch (ChannelException e) {
-                System.err.printf("Error forwarding message: %s\n", e.getMessage());
+                logger.error("Error forwarding message: {}", e.getMessage());
                 throw new RuntimeException(e);
             }
         });

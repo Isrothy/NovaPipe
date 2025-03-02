@@ -2,6 +2,8 @@ package DataChannel.NetworkChannel;
 
 import DataChannel.ChannelException;
 import DataChannel.DataChannel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.Socket;
@@ -22,6 +24,8 @@ public class NetworkChannelClient implements DataChannel {
 
     private static final int MAX_RETRIES = 5;
     private static final long BASE_RETRY_DELAY_MS = 2000; // 2 seconds
+
+    private static final Logger logger = LogManager.getLogger(NetworkChannelClient.class);
 
     /**
      * Creates a {@code NetworkChannelClient} and establishes a connection to the server.
@@ -50,7 +54,7 @@ public class NetworkChannelClient implements DataChannel {
                 socket = new Socket(host, port);
                 reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                System.out.println("Connected to server " + host + ":" + port);
+                logger.info("Connected to server {}:{}", host, port);
                 return;
             } catch (IOException e) {
                 attempt++;
@@ -58,7 +62,7 @@ public class NetworkChannelClient implements DataChannel {
                     throw new IOException("Unable to reconnect after " + MAX_RETRIES + " attempts", e);
                 }
                 long delay = BASE_RETRY_DELAY_MS * (1L << (attempt - 1)); // Exponential backoff
-                System.err.println("Reconnection attempt " + attempt + " failed. Retrying in " + delay + " ms.");
+                logger.error("Reconnection attempt {} failed. Retrying in {} ms.", attempt, delay);
                 try {
                     TimeUnit.MILLISECONDS.sleep(delay);
                 } catch (InterruptedException ie) {
@@ -75,7 +79,7 @@ public class NetworkChannelClient implements DataChannel {
      * @throws IOException if the reconnection fails.
      */
     private synchronized void reconnect() throws IOException {
-        System.err.println("Reconnecting to " + host + ":" + port);
+        logger.error("Reconnecting to {}:{}", host, port);
         closeResources();
         connect();
     }

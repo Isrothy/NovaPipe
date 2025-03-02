@@ -2,6 +2,8 @@ package DataChannel.NetworkChannel;
 
 import DataChannel.ChannelException;
 import DataChannel.DataChannel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -34,6 +36,7 @@ public class NetworkChannelServer implements DataChannel {
     // Blocking queue to store received messages.
     private final BlockingQueue<String> messageQueue = new LinkedBlockingQueue<>();
     private volatile boolean closed;
+    private static final Logger logger = LogManager.getLogger(NetworkChannelServer.class);
 
 
     /**
@@ -45,7 +48,7 @@ public class NetworkChannelServer implements DataChannel {
     public NetworkChannelServer(int port) throws IOException {
         this.serverSocket = new ServerSocket(port);
         this.closed = false;
-        System.out.println("Server listening on port " + port);
+        logger.info("Server listening on port {}", port);
         // Start a thread to continuously accept new clients.
         new Thread(this::acceptClients).start();
     }
@@ -59,14 +62,14 @@ public class NetworkChannelServer implements DataChannel {
         while (!closed) {
             try {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("Accepted connection from " + clientSocket.getInetAddress());
+                logger.info("Accepted connection from {}", clientSocket.getInetAddress());
                 ClientHandler handler = new ClientHandler(clientSocket);
                 clients.add(handler);
                 // Start a thread for reading from this client if needed.
                 new Thread(handler).start();
             } catch (IOException e) {
                 if (!closed) {
-                    System.err.println("Error accepting client: " + e.getMessage());
+                    logger.error("Error accepting client: {}", e.getMessage());
                 }
             }
         }
@@ -87,7 +90,7 @@ public class NetworkChannelServer implements DataChannel {
             try {
                 client.send(message);
             } catch (IOException e) {
-                System.err.println("Error sending message to a client. Disconnecting that client.");
+                logger.error("Error sending message to a client. Disconnecting that client.");
                 client.close();
                 clients.remove(client);
             }
@@ -184,7 +187,7 @@ public class NetworkChannelServer implements DataChannel {
             try {
                 socket.close();
             } catch (IOException e) {
-                System.err.println("Error closing client socket: " + e.getMessage());
+                logger.error("Error closing client socket: {}", e.getMessage());
             }
         }
 

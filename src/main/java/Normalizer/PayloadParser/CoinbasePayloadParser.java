@@ -4,6 +4,8 @@ import MarketDataType.Quote;
 import MarketDataType.Trade;
 import Utils.JsonUtil;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -21,6 +23,7 @@ import java.time.ZonedDateTime;
 public class CoinbasePayloadParser implements Parser {
 
     private final String platform = "coinbase";
+    private static final Logger logger = LogManager.getLogger(CoinbasePayloadParser.class);
 
     /**
      * Parses a ticker (quote) message from the Coinbase WebSocket feed.
@@ -112,7 +115,7 @@ public class CoinbasePayloadParser implements Parser {
                     (lastSize == null) ? null : new BigDecimal(lastSize)
             );
         } catch (Exception e) {
-            System.err.printf("Failed to parse trade: %s\n. Error: %s\n", root.toString(), e.getMessage());
+            logger.error("Failed to parse trade: {}. Error: {}", root.toString(), e.getMessage());
             return null;
         }
     }
@@ -179,7 +182,7 @@ public class CoinbasePayloadParser implements Parser {
                     null
             );
         } catch (Exception e) {
-            System.err.printf("Failed to parse trade: %s\n. Error: %s\n", root.toString(), e.getMessage());
+            logger.error("Failed to parse trade: {}. Error: {}", root.toString(), e.getMessage());
             return null;
         }
     }

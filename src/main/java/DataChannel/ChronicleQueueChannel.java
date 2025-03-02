@@ -5,7 +5,6 @@ import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.ExcerptTailer;
 
 import java.nio.file.Path;
-import java.util.Objects;
 
 /**
  * {@code ChronicleQueueChannel} is an implementation of {@link DataChannel} that
@@ -23,7 +22,6 @@ import java.util.Objects;
  * System.out.println("Received: " + message);
  * channel.close();
  * }</pre>
- *
  */
 public class ChronicleQueueChannel implements DataChannel {
     private final ChronicleQueue queue;

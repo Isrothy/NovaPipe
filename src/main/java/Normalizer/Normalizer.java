@@ -8,6 +8,8 @@ import Normalizer.PayloadParser.CoinbasePayloadParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -32,9 +34,11 @@ public class Normalizer implements Runnable {
     private final ObjectMapper objectMapper;
     private volatile boolean running = true;
 
-    /** Special message that signals the normalizer to stop processing. */
+    /**
+     * Special message that signals the normalizer to stop processing.
+     */
     public static final String POISON_PILL = "POISON_PILL";
-
+    private static final Logger logger = LogManager.getLogger(Normalizer.class);
 
     /**
      * Constructs a {@code Normalizer} that reads data from a {@link DataChannel} and writes
@@ -73,16 +77,16 @@ public class Normalizer implements Runnable {
             try {
                 String rawData = channel.receive();
                 if (POISON_PILL.equals(rawData)) {
-                    System.out.println("Received poison pill. Normalizer stopping.");
+                    logger.info("Received poison pill. Normalizer stopping.");
                     break;
                 }
                 if (rawData == null) {
                     continue;
                 }
                 process(rawData);
-                System.out.println("Processed data: " + rawData);
+                logger.info("Processed data: {}", rawData);
             } catch (ChannelException | IOException e) {
-                System.err.println("Error reading from channel: " + e.getMessage());
+                logger.info("Error reading from channel: {}", e.getMessage());
                 break;
             }
         }
@@ -103,7 +107,7 @@ public class Normalizer implements Runnable {
             writer.newLine();
             writer.flush();
         } else {
-            System.err.println("Parsed object is null; nothing to write.");
+            logger.error("Parsed object is null; nothing to write.");
         }
     }
 
@@ -119,7 +123,7 @@ public class Normalizer implements Runnable {
         Pattern pattern = Pattern.compile("([^@]+)@([^@]+)");
         Matcher matcher = pattern.matcher(tag);
         if (!matcher.matches()) {
-            System.err.printf("Invalid tag format: %s\n", tag);
+            logger.error("Invalid tag format: {}", tag);
             return null;
         }
         String typeStr = matcher.group(1);
@@ -131,12 +135,12 @@ public class Normalizer implements Runnable {
                 case "binance.us" -> new BinanceUsPayloadParser().parse(type, payloadNode);
                 case "coinbase" -> new CoinbasePayloadParser().parse(type, payloadNode);
                 default -> {
-                    System.err.printf("Unsupported exchange: %s\n", exchange);
+                    logger.error("Unsupported exchange: {}", exchange);
                     yield null;
                 }
             };
         } catch (IllegalArgumentException e) {
-            System.err.printf("Failed to parse type: %s\n", typeStr);
+            logger.error("Failed to parse type: {}", typeStr);
             return null;
         }
     }
