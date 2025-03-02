@@ -1,4 +1,4 @@
-package NetworkChannelDemo;
+package Demo.NetworkChannelDemo;
 
 import DataChannel.DataChannel;
 import DataChannel.NetworkChannel.NetworkChannelClient;

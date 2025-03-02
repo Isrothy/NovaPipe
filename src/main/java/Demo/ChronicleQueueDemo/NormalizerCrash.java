@@ -1,4 +1,4 @@
-package ChronicleQueueDemo;
+package Demo.ChronicleQueueDemo;
 
 import DataChannel.ChronicleQueueChannel;
 import DataChannel.DataChannel;

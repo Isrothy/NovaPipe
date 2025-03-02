@@ -1,4 +1,4 @@
-package PipelineChannelDemo;
+package Demo.PipelineChannelDemo;
 
 import DataChannel.ChronicleQueueChannel;
 import DataChannel.DataChannel;

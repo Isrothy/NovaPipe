@@ -33,6 +33,14 @@ NovaPipe offers the following key functionalities:
 - **Data Persistence**: Persist normalized data locally using JSONL (JSON Lines) format.
 - **Flexible Channel Communication**: Support various channel types for data transfer between components.
 
+
+## Getting Started
+
+```bash
+mvn clean install -DskipTests
+mvn exec:java -Dexec.mainClass="Demo.BlockQueueChannelDemo"
+```
+
 ## Supported Data Sources and Query Types
 
 ### Data Sources
