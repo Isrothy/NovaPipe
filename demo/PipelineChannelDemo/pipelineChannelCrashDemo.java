@@ -48,10 +48,6 @@ import java.nio.file.Path;
  *   </li>
  * </ol>
  *
- * <p>
- * The normalized data is stored in a JSONL file, which is chosen for its human-readability and ease of integration with
- * other systems.
- * </p>
  *
  * <p>
  * <b>Important:</b> When using ChronicleQueue on Java 17 and above, ensure that the required JVM options (e.g.,
@@ -107,12 +103,12 @@ public class pipelineChannelCrashDemo {
         // Give the producer a moment to start.
         Thread.sleep(1000);
 
-        DataChannel networkClientChannel1 = new NetworkChannelClient("localhost", port);
-        DataChannel chronicleChannel1 = new ChronicleQueueChannel(queueDir.toString(), tailerName);
-        DataChannel pipelineChannel1 = new PipelineChannel(networkClientChannel1, chronicleChannel1);
+        DataChannel networkClientChannel = new NetworkChannelClient("localhost", port);
+        DataChannel chronicleChannel = new ChronicleQueueChannel(queueDir.toString(), tailerName);
+        DataChannel pipelineChannel = new PipelineChannel(networkClientChannel, chronicleChannel);
 
         // --- Consumer Side: Normalizer Phase 1 ---
-        Normalizer consumerPhase1 = new Normalizer(pipelineChannel1, outputFile.toString());
+        Normalizer consumerPhase1 = new Normalizer(pipelineChannel, outputFile.toString());
         Thread consumerThread1 = new Thread(consumerPhase1);
         consumerThread1.start();
         System.out.println("Consumer Phase 1 started.");
@@ -122,19 +118,14 @@ public class pipelineChannelCrashDemo {
         System.out.println("Pausing Consumer Phase 1...");
         consumerPhase1.stop();
         consumerThread1.join();
-        pipelineChannel1.close();
         System.out.println("Consumer Phase 1 stopped.");
 
         // Simulate a pause before resuming.
         Thread.sleep(5000);
 
-        DataChannel networkClientChannel2 = new NetworkChannelClient("localhost", port);
-        DataChannel chronicleChannel2 = new ChronicleQueueChannel(queueDir.toString(), tailerName);
-        DataChannel pipelineChannel2 = new PipelineChannel(networkClientChannel2, chronicleChannel2);
-
         // --- Consumer Side: Normalizer Phase 2 (Resumed) ---
         // Create a new Normalizer instance using the same pipeline channel.
-        Normalizer consumerPhase2 = new Normalizer(pipelineChannel2, outputFile.toString());
+        Normalizer consumerPhase2 = new Normalizer(pipelineChannel, outputFile.toString());
         Thread consumerThread2 = new Thread(consumerPhase2);
         consumerThread2.start();
         System.out.println("Consumer Phase 2 started (resumed).");
@@ -144,9 +135,9 @@ public class pipelineChannelCrashDemo {
         System.out.println("Stopping Consumer Phase 2.");
         consumerPhase2.stop();
         consumerThread2.join();
+        pipelineChannel.close();
 
         // Shutdown: Close channels and interrupt producer.
-        pipelineChannel2.close();
         producerThread.interrupt();
         producerThread.join();
 
