@@ -377,7 +377,7 @@ public class PipelineChannelDemo {
 }
 ```
 
-## 6. Serialized Format: `JSONL`
+## Serialized Format: `JSONL`
 
 NovaPipe uses JSON Lines (`JSONL`) format for storing normalized data. The advantages of JSONL include:
 

@@ -54,7 +54,7 @@ import java.nio.file.Path;
  * {@code --add-opens} and {@code --add-exports}) are set appropriately as described in the project documentation.
  * </p>
  */
-public class pipelineChannelCrashDemo {
+public class PipelineChannelCrashDemo {
 
     /**
      * Demonstrates a scenario where a consumer (Normalizer) stops and later resumes processing data.
