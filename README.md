@@ -1,9 +1,9 @@
 # NovaPipe
 
-> **Important Note:**  
+> [!IMPORTANT]
 > NovaPipe uses ChronicleQueue for persistent storage. When running this application, you **must** add the following JVM
 > options to your runtime configuration:
->
+> 
 > ```
 > --add-opens java.base/java.lang.reflect=ALL-UNNAMED \
 > --add-opens java.base/sun.nio.ch=ALL-UNNAMED \
@@ -33,13 +33,17 @@ NovaPipe offers the following key functionalities:
 - **Data Persistence**: Persist normalized data locally using JSONL (JSON Lines) format.
 - **Flexible Channel Communication**: Support various channel types for data transfer between components.
 
-
 ## Getting Started
 
+The project is built using Maven. To run the demo, execute the following commands:
+
 ```bash
+source env.sh # load environment variables
 mvn clean install -DskipTests
 mvn exec:java -Dexec.mainClass="Demo.BlockQueueChannelDemo"
 ```
+
+More demo code can be found in the ``src/main/java/Demo`` directory.
 
 ## Supported Data Sources and Query Types
 
@@ -138,7 +142,8 @@ tolerance:
   The system supports chaining of channels (using the PipelineChannel) so that data can be seamlessly passed through
   multiple stages. This design minimizes the risk of data loss if one channel in the pipeline fails.
 
-For practical examples of these robustness features, please refer to the demos in the `./demo` directory. These demos
+For practical examples of these robustness features, please refer to the demos in the `src/main/java/Demo` directory.
+These demos
 illustrate scenarios such as:
 
 - Reconnection after a client or server crash.
