@@ -40,10 +40,10 @@ public interface DataChannel extends AutoCloseable {
     /**
      * Receives a message from the channel.
      * <p>
-     * Implementations may block until a message is available or return {@code null} if non-blocking.
+     * Implementations blocks until a message is available.
      * </p>
      *
-     * @return The received message, or {@code null} if no message is available (depends on implementation).
+     * @return The received message
      * @throws ChannelException If an error occurs while receiving the message or if the channel is closed.
      */
     String receive() throws ChannelException;

@@ -233,4 +233,68 @@ public class NetworkChannelTest {
 
         executor.shutdownNow();
     }
+    @Test
+    public void testServerReceivesMessagesFromMultipleProducers() throws Exception {
+        int port = 12345; // Choose an available port.
+        ExecutorService executor = Executors.newFixedThreadPool(5);
+
+        // Server task: Receives messages from multiple producers until "POISON_PILL" is received.
+        Callable<List<String>> serverTask = () -> {
+            List<String> receivedMessages = new ArrayList<>();
+            try (DataChannel serverChannel = new NetworkChannelServer(port)) {
+                while (true) {
+                    String message = serverChannel.receive();
+                    if ("POISON_PILL".equals(message)) {
+                        System.out.println("Server received termination signal.");
+                        break;
+                    }
+                    System.out.println("Server received: " + message);
+                    receivedMessages.add(message);
+                }
+            }
+            return receivedMessages;
+        };
+
+        // Start the server task.
+        Future<List<String>> serverFuture = executor.submit(serverTask);
+
+        // Give the server a moment to start.
+        Thread.sleep(1000);
+
+        // Producer task: Each producer connects to the server and sends messages.
+        Callable<Void> producerTask = () -> {
+            try (DataChannel clientChannel = new NetworkChannelClient("localhost", port)) {
+                for (int i = 0; i < 3; i++) {
+                    String msg = "Producer-" + Thread.currentThread().getId() + " message " + i;
+                    clientChannel.send(msg);
+                    System.out.println("Producer sent: " + msg);
+                    Thread.sleep(100);
+                }
+            }
+            return null;
+        };
+
+        // Launch multiple producer tasks (e.g., 3 producers).
+        int producerCount = 3;
+        List<Future<Void>> producerFutures = new ArrayList<>();
+        for (int i = 0; i < producerCount; i++) {
+            producerFutures.add(executor.submit(producerTask));
+        }
+
+        // Wait for all producers to complete.
+        for (Future<Void> future : producerFutures) {
+            future.get(5, TimeUnit.SECONDS);
+        }
+
+        // Send the termination signal to the server.
+        try (DataChannel clientChannel = new NetworkChannelClient("localhost", port)) {
+            clientChannel.send("POISON_PILL");
+        }
+
+        // Collect and verify the server's received messages.
+        List<String> receivedMessages = serverFuture.get(10, TimeUnit.SECONDS);
+        assertEquals(producerCount * 3, receivedMessages.size(), "Server should receive all producer messages");
+
+        executor.shutdownNow();
+    }
 }

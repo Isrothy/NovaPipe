@@ -3,10 +3,7 @@ package DataChannel.NetworkChannel;
 import DataChannel.ChannelException;
 import DataChannel.DataChannel;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.TimeUnit;
 
@@ -52,6 +49,7 @@ public class NetworkChannelClient implements DataChannel {
             try {
                 socket = new Socket(host, port);
                 reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 System.out.println("Connected to server " + host + ":" + port);
                 return;
             } catch (IOException e) {
