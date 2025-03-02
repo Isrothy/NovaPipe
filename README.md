@@ -3,7 +3,7 @@
 > [!IMPORTANT]
 > NovaPipe uses ChronicleQueue for persistent storage. When running this application, you **must** add the following JVM
 > options to your runtime configuration:
-> 
+>
 > ```
 > --add-opens java.base/java.lang.reflect=ALL-UNNAMED \
 > --add-opens java.base/sun.nio.ch=ALL-UNNAMED \
@@ -379,8 +379,29 @@ public class PipelineChannelDemo {
 
 ## Serialized Format: `JSONL`
 
-NovaPipe uses JSON Lines (`JSONL`) format for storing normalized data. The advantages of JSONL include:
+NovaPipe uses JSON Lines (`JSONL`) format for storing normalized data. The advantages of `JSONL` include:
 
 - **Easy to Read**: Each line in the file is a valid JSON object.
-- **Interoperability**: JSONL is supported by many languages and tools.
+- **Interoperability**: `JSONL` is supported by many languages and tools.
 - **Stream Processing**: Ideal for log processing and incremental reading.
+
+## TODO
+
+- **Unified Product Naming:**
+    - Resolve inconsistencies between product names across data sources (e.g., "btcusdt" in Binance.US vs. "BTCUSD" in
+      Coinbase).
+    - Create and maintain a mapping or a unified naming convention to standardize product identifiers across platforms.
+
+- **Enhanced Normalizer Output:**
+    - Extend the normalizer to support additional output streams and serialization formats (e.g., XML, Avro, Protobuf).
+    - Consider refactoring the normalizer into a channel so that different serialization mechanisms can be
+      easily integrated.
+
+- **Generic Query Generator:**
+    - Develop a more generic and extensible query generator that can support additional kinds of information in the
+      future.
+    - This could involve abstracting common query components and allowing customizations for new data sources.
+
+- **Command-Line Interface (CLI):**
+    - Design and implement a CLI for easier configuration and execution of the application.
+    - Provide options for selecting data sources, query types, output formats, and channel configurations.
