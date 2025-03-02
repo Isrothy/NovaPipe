@@ -40,7 +40,7 @@ public interface DataChannel extends AutoCloseable {
     /**
      * Receives a message from the channel.
      * <p>
-     * Implementations blocks until a message is available.
+     * Implementations blocks until a message is available, or returns null if the channel is non-blocking.
      * </p>
      *
      * @return The received message

@@ -87,10 +87,7 @@ public class ChronicleQueueChannel implements DataChannel {
 
     /**
      * Reads the next available message from the queue.
-     * <p>
-     * This method **blocks** until a message is available, instead of returning {@code null}.
-     * It continuously checks for new messages while ensuring minimal CPU usage.
-     * </p>
+     * It sends null if the queue is empty.
      *
      * @return The next message from the queue.
      * @throws ChannelException If the channel is closed or an error occurs while reading.
@@ -101,15 +98,8 @@ public class ChronicleQueueChannel implements DataChannel {
             throw new ChannelException("Channel is closed.");
         }
         try {
-            while (!closed) {
-                try (var doc = tailer.readingDocument()) {
-                    if (doc.isPresent()) {
-                        return Objects.requireNonNull(doc.wire()).read().text();
-                    }
-                }
-                Thread.sleep(10); // Prevent busy-waiting
-            }
-            throw new ChannelException("Channel is closed.");
+            // Reads a text message from the queue; returns null if no message is available.
+            return tailer.readText();
         } catch (Exception e) {
             throw new ChannelException("Error receiving message", e);
         }
