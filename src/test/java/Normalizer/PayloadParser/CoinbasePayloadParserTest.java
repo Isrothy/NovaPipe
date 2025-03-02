@@ -57,8 +57,8 @@ class CoinbasePayloadParserTest {
         // Compare time conversion from ISO string to Instant.
         Instant expectedTime = ZonedDateTime.parse("2022-10-19T23:28:22.061769Z").toInstant();
         assertEquals(expectedTime, quote.time());
-        assertEquals("370843401", quote.trade_id());
-        assertEquals(new BigDecimal("11.4396987"), quote.last_size());
+        assertEquals("370843401", quote.tradeId());
+        assertEquals(new BigDecimal("11.4396987"), quote.lastSize());
     }
 
     @Test

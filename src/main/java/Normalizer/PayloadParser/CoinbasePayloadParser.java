@@ -90,8 +90,8 @@ public class CoinbasePayloadParser implements Parser {
             //        BigDecimal volume30d,
             //        String side,
             //        Instant time,
-            //        String trade_id,
-            //        BigDecimal last_size
+            //        String tradeId,
+            //        BigDecimal lastSize
             //) implements Serializable {
             //
             //}
@@ -123,7 +123,7 @@ public class CoinbasePayloadParser implements Parser {
     /**
      * Parses a trade (match) message from the Coinbase WebSocket feed.
      * <p>
-     * The input JSON is expected to contain fields like {@code trade_id}, {@code price}, {@code size},
+     * The input JSON is expected to contain fields like {@code tradeId}, {@code price}, {@code size},
      * {@code maker_order_id}, {@code taker_order_id}, and {@code time}. If any field is missing or null, it will be ignored.
      * </p>
      *

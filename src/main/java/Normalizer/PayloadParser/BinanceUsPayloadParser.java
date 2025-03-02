@@ -74,8 +74,8 @@ public class BinanceUsPayloadParser implements Parser {
             //        BigDecimal volume30d,
             //        String side,
             //        Instant time,
-            //        String trade_id,
-            //        BigDecimal last_size
+            //        String tradeId,
+            //        BigDecimal lastSize
             //) implements Serializable {
             //
             //}

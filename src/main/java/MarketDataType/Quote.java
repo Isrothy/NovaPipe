@@ -28,8 +28,8 @@ import java.time.Instant;
  * @param volume30d   The total trading volume of the product in the last 30 days.
  * @param side        The last trade direction (e.g., "buy" or "sell").
  * @param time        The timestamp of when the quote was received.
- * @param trade_id    The identifier of the last executed trade.
- * @param last_size   The size of the last executed trade.
+ * @param tradeId     The identifier of the last executed trade.
+ * @param lastSize    The size of the last executed trade.
  */
 public record Quote(
         String platform,
@@ -47,8 +47,8 @@ public record Quote(
         BigDecimal volume30d,
         String side,
         Instant time,
-        String trade_id,
-        BigDecimal last_size
+        String tradeId,
+        BigDecimal lastSize
 ) implements Serializable {
 
 }
