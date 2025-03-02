@@ -65,7 +65,7 @@ More demo code can be found in the ``src/main/java/Demo`` directory.
     - `product` (String): Market product (e.g., "BTC-USD").
     - `bestBid`, `bestBidSize`, `bestAsk`, `bestAskSize` (BigDecimal): Best bid/ask price and quantities.
     - Additional fields such as `price`, `open24h`, `volume24h`, `low24h`, `high24h`, `volume30d`, `side`, `time`,
-      `trade_id`, `last_size`.
+      `tradeId`, `lastSize`.
 
 - **Trade**:
     - `platform` (String): Data source.
