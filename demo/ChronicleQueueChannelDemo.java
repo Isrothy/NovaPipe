@@ -8,8 +8,37 @@ import Producer.QueryGenerator.CoinbaseGenerator;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * Demonstrates the usage of {@link ChronicleQueueChannel} for persisting market data
+ * and enabling recovery in case of consumer failures.
+ *
+ * <p>
+ * The demo consists of two scenarios:
+ * <ul>
+ *     <li>{@link #chronicleQueueChannelDemo()} - A simple producer-consumer setup using ChronicleQueue.</li>
+ *     <li>{@link #normalizerCrashDemo()} - Demonstrates consumer failure and restart while maintaining message integrity.</li>
+ * </ul>
+ * </p>
+ */
 public class ChronicleQueueChannelDemo {
 
+
+    public static void main(String[] args) throws Exception {
+//        normalizerCrashDemo();
+        chronicleQueueChannelDemo();
+    }
+
+    /**
+     * Demonstrates a Chronicle Queue-based pipeline where a producer fetches market
+     * data from Coinbase and writes it to a persistent queue.
+     *
+     * <p>
+     * The data is then read by a consumer (Normalizer), which processes the messages and writes them
+     * to an output file.
+     * </p>
+     *
+     * @throws Exception If any error occurs during execution.
+     */
     public static void chronicleQueueChannelDemo() throws Exception {
         // Use a directory for Chronicle Queue storage.
         Path queueDir = Path.of("queue-data");
@@ -19,7 +48,7 @@ public class ChronicleQueueChannelDemo {
         System.out.println("Queue directory: " + queueDir.toAbsolutePath());
 
         // Use a fixed output file to store normalized JSON messages.
-        Path outputFile = Path.of("normalized_output_chronicle.json");
+        Path outputFile = Path.of("normalized_output_chronicle.jsonl");
         if (!Files.exists(outputFile)) {
             Files.createFile(outputFile);
         }
@@ -45,6 +74,18 @@ public class ChronicleQueueChannelDemo {
         producerThread.start();
     }
 
+    /**
+     * Demonstrates a scenario where a consumer (Normalizer) crashes and later restarts,
+     * while the producer continues to write data to Chronicle Queue.
+     *
+     * <p>
+     * The consumer initially starts, reads some messages, then stops. After a brief pause,
+     * a new consumer instance is created with the same tailer name, allowing it to resume
+     * from where the previous instance left off.
+     * </p>
+     *
+     * @throws Exception If any error occurs during execution.
+     */
     public static void normalizerCrashDemo() throws Exception {
         // Use a directory for Chronicle Queue storage.
         Path queueDir = Path.of("queue-data");
@@ -108,7 +149,4 @@ public class ChronicleQueueChannelDemo {
         System.out.println("Demo complete. Check output file at: " + outputFile.toAbsolutePath());
     }
 
-    public static void main(String[] args) throws Exception {
-        normalizerCrashDemo();
-    }
 }

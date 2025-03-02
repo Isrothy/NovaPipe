@@ -11,12 +11,37 @@ import Producer.QueryGenerator.CoinbaseGenerator;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * Demonstrates the usage of {@link PipelineChannel} for chaining multiple data channels.
+ * <p>
+ * This class includes two primary demonstration methods:
+ * <ul>
+ *     <li>{@link #pipelineChannelDemo()} - Demonstrates a basic producer-consumer pipeline.</li>
+ *     <li>{@link #pipelineChannelCrashDemo()} - Simulates a consumer failure and restart.</li>
+ * </ul>
+ * </p>
+ */
 public class PipelineChannelDemo {
 
     public static void main(String[] args) throws Exception {
-        pipelineChannelCrashDemo();
+//        pipelineChannelCrashDemo();
+        pipelineChannelDemo();
     }
 
+    /**
+     * Demonstrates a scenario where a consumer (Normalizer) stops and later resumes processing data.
+     * <p>
+     * The demo simulates a scenario where:
+     * <ul>
+     *     <li>A producer sends market data via a network channel.</li>
+     *     <li>The data passes through a {@link PipelineChannel}, which forwards messages to a {@link ChronicleQueueChannel}.</li>
+     *     <li>The consumer (Normalizer) starts reading from the pipeline.</li>
+     *     <li>After some time, the consumer stops and later resumes processing.</li>
+     * </ul>
+     * </p>
+     *
+     * @throws Exception If any error occurs during execution.
+     */
     public static void pipelineChannelCrashDemo() throws Exception {
         int port = 12345;  // Choose an available port
 
@@ -96,6 +121,21 @@ public class PipelineChannelDemo {
         System.out.println("Demo complete. Check output file at: " + outputFile.toAbsolutePath());
     }
 
+    /**
+     * Demonstrates a full pipeline where a producer sends market data via a network channel,
+     * and a consumer processes the data through a {@link PipelineChannel}.
+     * <p>
+     * The steps in this demonstration are:
+     * <ul>
+     *     <li>A producer sends data via a {@link NetworkChannelServer}.</li>
+     *     <li>The data is received by a {@link NetworkChannelClient}.</li>
+     *     <li>The data is forwarded via a {@link PipelineChannel} to a {@link ChronicleQueueChannel}.</li>
+     *     <li>The consumer (Normalizer) reads from the Chronicle queue and processes the data.</li>
+     * </ul>
+     * </p>
+     *
+     * @throws Exception If any error occurs during execution.
+     */
     public static void pipelineChannelDemo() throws Exception {
         int port = 12345;  // Choose an available port
 
