@@ -14,7 +14,7 @@ import java.util.List;
  * Internally, background threads continuously forward data from one channel to the next.
  * </p>
  *
- * <h3>Usage Example:</h3>
+ * <b>Usage Example:</b>
  * <pre>{@code
  * DataChannel networkChannel = new NetworkChannelClient("localhost", 12345);
  * DataChannel queueChannel = new ChronicleQueueChannel("queue-dir");

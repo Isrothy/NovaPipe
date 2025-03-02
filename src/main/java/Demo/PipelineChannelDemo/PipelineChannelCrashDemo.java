@@ -66,7 +66,6 @@ public class PipelineChannelCrashDemo {
      *     <li>The consumer (Normalizer) starts reading from the pipeline.</li>
      *     <li>After some time, the consumer stops and later resumes processing.</li>
      * </ul>
-     * </p>
      *
      * @throws Exception If any error occurs during execution.
      */

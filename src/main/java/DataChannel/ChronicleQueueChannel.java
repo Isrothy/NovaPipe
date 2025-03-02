@@ -14,7 +14,7 @@ import java.nio.file.Path;
  * file-based queue, which allows messages to be retained even after application restarts.
  * </p>
  *
- * <h3>Usage Example:</h3>
+ * <b>Usage Example:</b>
  * <pre>{@code
  * DataChannel channel = new ChronicleQueueChannel("queue-directory");
  * channel.send("Hello, Chronicle Queue!");
