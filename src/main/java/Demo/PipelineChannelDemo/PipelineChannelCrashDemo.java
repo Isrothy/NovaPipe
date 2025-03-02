@@ -113,7 +113,7 @@ public class PipelineChannelCrashDemo {
         consumerThread1.start();
         System.out.println("Consumer Phase 1 started.");
 
-        // Let consumer run for 20 seconds.
+        // Let consumer run for 10 seconds.
         Thread.sleep(10000);
         System.out.println("Pausing Consumer Phase 1...");
         consumerPhase1.stop();
@@ -130,7 +130,7 @@ public class PipelineChannelCrashDemo {
         consumerThread2.start();
         System.out.println("Consumer Phase 2 started (resumed).");
 
-        // Let the resumed consumer run for another 20 seconds.
+        // Let the resumed consumer run for another 10 seconds.
         Thread.sleep(10000);
         System.out.println("Stopping Consumer Phase 2.");
         consumerPhase2.stop();

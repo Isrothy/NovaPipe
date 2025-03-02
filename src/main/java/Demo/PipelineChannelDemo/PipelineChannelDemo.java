@@ -83,7 +83,7 @@ public class PipelineChannelDemo {
         // --- Producer Side (NetworkChannelServer) ---
         Thread producerThread = new Thread(() -> {
             try (DataChannel networkServerChannel = new NetworkChannelServer(port)) {
-                Producer producer = new Producer(new CoinbaseGenerator(), "BTC-USD", MarketDataQueryType.QUOTE, networkServerChannel);
+                Producer producer = new Producer(new CoinbaseGenerator(), "BTC-USD", MarketDataQueryType.TRADE, networkServerChannel);
                 producer.run();
             } catch (Exception e) {
                 System.err.println("Producer error: " + e.getMessage());
